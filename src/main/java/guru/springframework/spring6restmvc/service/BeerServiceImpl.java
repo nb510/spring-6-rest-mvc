@@ -70,7 +70,7 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void createBeer(Beer beer) {
+    public Beer createBeer(Beer beer) {
         Beer savedBeer = Beer.builder()
                 .id(UUID.randomUUID())
                 .version(1)
@@ -84,5 +84,6 @@ public class BeerServiceImpl implements BeerService {
                 .build();
 
         beerMap.put(savedBeer.getId(), savedBeer);
+        return savedBeer;
     }
 }
