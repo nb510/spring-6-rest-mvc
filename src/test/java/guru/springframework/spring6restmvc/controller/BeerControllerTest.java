@@ -11,11 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
 class BeerControllerTest {
@@ -28,12 +27,20 @@ class BeerControllerTest {
 
     @Test
     void testGetBeerById() throws Exception {
-        when(beerService.getBeerById(any(UUID.class))).thenReturn(Beer.builder().id(UUID.randomUUID()).build());
 
-        mockMvc.perform(get("/api/v1/beer/%s".formatted(UUID.randomUUID()))
+        Beer beer = Beer.builder()
+                .id(UUID.randomUUID())
+                .beerName("Oxota Krepkoe")
+                .build();
+
+        when(beerService.getBeerById(beer.getId())).thenReturn(beer);
+
+        mockMvc.perform(get("/api/v1/beer/%s".formatted(beer.getId()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(beer.getId().toString())))
+                .andExpect(jsonPath("$.beerName", is(beer.getBeerName())));
     }
 
 }
