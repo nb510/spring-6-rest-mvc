@@ -12,4 +12,6 @@ public interface BeerService {
     Beer getBeerById(UUID id);
 
     Beer createBeer(Beer beer);
+
+    void updateBeerById(UUID id, Beer beer);
 }
