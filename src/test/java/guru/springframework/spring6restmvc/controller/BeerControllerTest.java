@@ -18,9 +18,9 @@ import java.util.UUID;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
@@ -54,6 +54,22 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Test
+    void testUpdateBeer() throws Exception {
+        Beer beer = Beer.builder()
+                .id(UUID.randomUUID())
+                .quantityOnHand(0)
+                .build();
+
+        mockMvc.perform(put("/api/v1/beer/%s".formatted(beer.getId()))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+    }
 
     @Test
     void testListBeer() throws Exception {
