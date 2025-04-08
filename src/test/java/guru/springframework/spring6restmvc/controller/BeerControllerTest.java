@@ -5,6 +5,7 @@ import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -54,6 +56,18 @@ class BeerControllerTest {
 
     @MockBean
     BeerService beerService;
+
+    @Test
+    void deleteBeer() throws Exception {
+        UUID id = UUID.randomUUID();
+        mockMvc.perform(delete("/api/v1/beer/%s".formatted(id)).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(beerService).deleteBeerById(uuidArgumentCaptor.capture());
+
+        assertThat(id).isEqualTo(uuidArgumentCaptor.getValue());
+    }
 
     @Test
     void testUpdateBeer() throws Exception {
