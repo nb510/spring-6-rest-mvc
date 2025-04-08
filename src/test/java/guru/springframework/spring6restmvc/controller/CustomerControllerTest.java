@@ -16,8 +16,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
@@ -31,6 +31,19 @@ class CustomerControllerTest {
 
     @MockBean
     CustomerService customerService;
+
+    @Test
+    public void testUpdateCustomer() throws Exception {
+        Customer customer = Customer.builder().customerName("Updated").build();
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(put("/api/v1/customer/%s".formatted(id.toString()))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customer)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+    }
 
     @Test
     public void testCreateCustomer() throws Exception {
