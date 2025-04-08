@@ -12,7 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +38,26 @@ class CustomerControllerTest {
     CustomerService customerService;
 
     @Captor
-    ArgumentCaptor<UUID> uuidArgumentCaptor;
+    ArgumentCaptor<UUID> uuidCaptor;
+    @Captor
+    ArgumentCaptor<Customer> customerCaptor;
+
+    @Test
+    public void testPatchCustomer() throws Exception {
+        UUID id = UUID.randomUUID();
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("customerName", "Updated name");
+
+        mockMvc.perform(patch("/api/v1/customer/%s".formatted(id))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(customerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(customerService).patchCustomerById(uuidCaptor.capture(), customerCaptor.capture());
+        assertThat(id).isEqualTo(uuidCaptor.getValue());
+        assertThat(customerMap.get("customerName")).isEqualTo(customerCaptor.getValue().getCustomerName());
+    }
 
     @Test
     public void testDeleteCustomer() throws Exception {
@@ -45,9 +66,9 @@ class CustomerControllerTest {
         mockMvc.perform(delete("/api/v1/customer/%s".formatted(id.toString())))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).deleteCustomerById(uuidArgumentCaptor.capture());
+        verify(customerService).deleteCustomerById(uuidCaptor.capture());
 
-        assertThat(id).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(id).isEqualTo(uuidCaptor.getValue());
     }
 
     @Test
