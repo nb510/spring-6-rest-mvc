@@ -6,6 +6,7 @@ import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +37,31 @@ class BeerControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @MockBean
+    BeerService beerService;
+
+    @Captor
+    ArgumentCaptor<UUID> uuidCaptor;
+    @Captor
+    ArgumentCaptor<Beer> beerCaptor;
+
+    @Test
+    public void testPatchBeer() throws Exception {
+        Map<String, Object> beerMap = new HashMap<>();
+        beerMap.put("beerName", "Updated name");
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(patch("/api/v1/beer/%s".formatted(id))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beerMap)))
+                .andExpect(status().isNoContent());
+
+        verify(beerService).patchBeer(uuidCaptor.capture(), beerCaptor.capture());
+        assertThat(id).isEqualTo(uuidCaptor.getValue());
+        assertThat(beerMap.get("beerName")).isEqualTo(beerCaptor.getValue().getBeerName());
+    }
+
     @Test
     public void createBeer() throws Exception {
         Beer beer = Beer.builder()
@@ -53,9 +81,6 @@ class BeerControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"));
     }
-
-    @MockBean
-    BeerService beerService;
 
     @Test
     void deleteBeer() throws Exception {
