@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH;
+import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,7 +53,7 @@ class BeerControllerTest {
         beerMap.put("beerName", "Updated name");
         UUID id = UUID.randomUUID();
 
-        mockMvc.perform(patch(BEER_PATH + "/%s" .formatted(id))
+        mockMvc.perform(patch(BEER_PATH_ID, id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerMap)))
@@ -86,7 +87,7 @@ class BeerControllerTest {
     @Test
     void deleteBeer() throws Exception {
         UUID id = UUID.randomUUID();
-        mockMvc.perform(delete(BEER_PATH + "/%s" .formatted(id)).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(delete(BEER_PATH_ID, id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
@@ -102,7 +103,7 @@ class BeerControllerTest {
                 .quantityOnHand(0)
                 .build();
 
-        mockMvc.perform(put(BEER_PATH + "/%s" .formatted(beer.getId()))
+        mockMvc.perform(put(BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
@@ -133,7 +134,7 @@ class BeerControllerTest {
 
         when(beerService.getBeerById(beer.getId())).thenReturn(beer);
 
-        mockMvc.perform(get(BEER_PATH + "/%s" .formatted(beer.getId()))
+        mockMvc.perform(get(BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
