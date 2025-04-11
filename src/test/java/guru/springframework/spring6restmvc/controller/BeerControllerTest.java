@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
@@ -46,6 +47,15 @@ class BeerControllerTest {
     ArgumentCaptor<UUID> uuidCaptor;
     @Captor
     ArgumentCaptor<Beer> beerCaptor;
+
+    @Test
+    public void testException() throws Exception {
+        when(beerService.getBeerById(any())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get(BEER_PATH_ID, UUID.randomUUID())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     public void testPatchBeer() throws Exception {
