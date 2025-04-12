@@ -1,7 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
@@ -15,10 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH_ID;
@@ -50,7 +46,7 @@ class BeerControllerTest {
 
     @Test
     public void testException() throws Exception {
-        when(beerService.getBeerById(any())).thenThrow(NotFoundException.class);
+        given(beerService.getBeerById(any())).willReturn(Optional.empty());
 
         mockMvc.perform(get(BEER_PATH_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON))
@@ -142,7 +138,7 @@ class BeerControllerTest {
                 .beerName("Oxota Krepkoe")
                 .build();
 
-        when(beerService.getBeerById(beer.getId())).thenReturn(beer);
+        when(beerService.getBeerById(beer.getId())).thenReturn(Optional.of(beer));
 
         mockMvc.perform(get(BEER_PATH_ID, beer.getId())
                         .accept(MediaType.APPLICATION_JSON))

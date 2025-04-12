@@ -1,7 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.model.Customer;
 import guru.springframework.spring6restmvc.service.CustomerService;
 import org.junit.jupiter.api.Test;
@@ -13,10 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static guru.springframework.spring6restmvc.controller.CustomerController.CUSTOMER_PATH;
 import static guru.springframework.spring6restmvc.controller.CustomerController.CUSTOMER_PATH_ID;
@@ -25,7 +21,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -48,7 +43,7 @@ class CustomerControllerTest {
 
     @Test
     public void testException() throws Exception {
-        when(customerService.getCustomerById(any())).thenThrow(NotFoundException.class);
+        given(customerService.getCustomerById(any())).willReturn(Optional.empty());
 
         mockMvc.perform(get(CUSTOMER_PATH_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON))
@@ -127,7 +122,7 @@ class CustomerControllerTest {
                 .id(UUID.randomUUID())
                 .customerName("Classic")
                 .build();
-        given(customerService.getCustomerById(customer.getId())).willReturn(customer);
+        given(customerService.getCustomerById(customer.getId())).willReturn(Optional.of(customer));
 
         mockMvc.perform(get(CUSTOMER_PATH_ID, customer.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
