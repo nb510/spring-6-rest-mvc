@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.model.Beer;
+import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class BeerControllerTest {
     @Captor
     ArgumentCaptor<UUID> uuidCaptor;
     @Captor
-    ArgumentCaptor<Beer> beerCaptor;
+    ArgumentCaptor<BeerDto> beerCaptor;
 
     @Test
     public void testException() throws Exception {
@@ -72,7 +72,7 @@ class BeerControllerTest {
 
     @Test
     public void createBeer() throws Exception {
-        Beer beer = Beer.builder()
+        BeerDto beer = BeerDto.builder()
                 .beerName("Crank")
                 .beerStyle(BeerStyle.PALE_ALE)
                 .upc("12356222")
@@ -80,7 +80,7 @@ class BeerControllerTest {
                 .quantityOnHand(392)
                 .build();
 
-        given(beerService.createBeer(any(Beer.class))).willReturn(beer);
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(beer);
 
         mockMvc.perform(post(BEER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
@@ -104,7 +104,7 @@ class BeerControllerTest {
 
     @Test
     void testUpdateBeer() throws Exception {
-        Beer beer = Beer.builder()
+        BeerDto beer = BeerDto.builder()
                 .id(UUID.randomUUID())
                 .quantityOnHand(0)
                 .build();
@@ -115,13 +115,13 @@ class BeerControllerTest {
                         .content(objectMapper.writeValueAsString(beer)))
                 .andExpect(status().isNoContent());
 
-        verify(beerService).updateBeerById(any(UUID.class), any(Beer.class));
+        verify(beerService).updateBeerById(any(UUID.class), any(BeerDto.class));
     }
 
     @Test
     void testListBeer() throws Exception {
-        Beer beer1 = Beer.builder().id(UUID.randomUUID()).build();
-        Beer beer2 = Beer.builder().id(UUID.randomUUID()).build();
+        BeerDto beer1 = BeerDto.builder().id(UUID.randomUUID()).build();
+        BeerDto beer2 = BeerDto.builder().id(UUID.randomUUID()).build();
         given(beerService.listBeers()).willReturn(List.of(beer1, beer2));
 
         mockMvc.perform(get(BEER_PATH).accept(MediaType.APPLICATION_JSON))
@@ -133,7 +133,7 @@ class BeerControllerTest {
     @Test
     void testGetBeerById() throws Exception {
 
-        Beer beer = Beer.builder()
+        BeerDto beer = BeerDto.builder()
                 .id(UUID.randomUUID())
                 .beerName("Oxota Krepkoe")
                 .build();

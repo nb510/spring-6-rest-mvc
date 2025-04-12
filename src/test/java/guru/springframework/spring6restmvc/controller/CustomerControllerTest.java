@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import guru.springframework.spring6restmvc.model.Customer;
+import guru.springframework.spring6restmvc.model.CustomerDto;
 import guru.springframework.spring6restmvc.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +39,7 @@ class CustomerControllerTest {
     @Captor
     ArgumentCaptor<UUID> uuidCaptor;
     @Captor
-    ArgumentCaptor<Customer> customerCaptor;
+    ArgumentCaptor<CustomerDto> customerCaptor;
 
     @Test
     public void testException() throws Exception {
@@ -81,7 +81,7 @@ class CustomerControllerTest {
 
     @Test
     public void testUpdateCustomer() throws Exception {
-        Customer customer = Customer.builder().customerName("Updated").build();
+        CustomerDto customer = CustomerDto.builder().customerName("Updated").build();
         UUID id = UUID.randomUUID();
 
         mockMvc.perform(put(CUSTOMER_PATH_ID,id)
@@ -89,12 +89,12 @@ class CustomerControllerTest {
                         .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService).updateCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService).updateCustomerById(any(UUID.class), any(CustomerDto.class));
     }
 
     @Test
     public void testCreateCustomer() throws Exception {
-        Customer customer = Customer.builder().id(UUID.randomUUID()).build();
+        CustomerDto customer = CustomerDto.builder().id(UUID.randomUUID()).build();
 
         given(customerService.createCustomer(any())).willReturn(customer);
 
@@ -107,8 +107,8 @@ class CustomerControllerTest {
 
     @Test
     public void testListCustomers() throws Exception {
-        Customer customer1 = Customer.builder().id(UUID.randomUUID()).build();
-        Customer customer2 = Customer.builder().id(UUID.randomUUID()).build();
+        CustomerDto customer1 = CustomerDto.builder().id(UUID.randomUUID()).build();
+        CustomerDto customer2 = CustomerDto.builder().id(UUID.randomUUID()).build();
         given(customerService.listCustomers()).willReturn(List.of(customer1, customer2));
 
         mockMvc.perform(get(CUSTOMER_PATH).accept(MediaType.APPLICATION_JSON))
@@ -118,7 +118,7 @@ class CustomerControllerTest {
 
     @Test
     public void testGetCustomerById() throws Exception {
-        Customer customer = Customer.builder()
+        CustomerDto customer = CustomerDto.builder()
                 .id(UUID.randomUUID())
                 .customerName("Classic")
                 .build();
