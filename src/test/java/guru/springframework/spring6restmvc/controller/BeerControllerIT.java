@@ -6,6 +6,7 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,24 @@ class BeerControllerIT {
     void testListBeer() {
         List<BeerDto> result = beerController.listBeers();
         assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void testCreateBeer() {
+        BeerDto beerDto = BeerDto.builder()
+                .beerName("super Beer")
+                .upc("1")
+                .build();
+
+        ResponseEntity<Void> response = beerController.createBeer(beerDto);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        assertThat(response.getHeaders().getLocation()).isNotNull();
+
+        String[] path = response.getHeaders().getLocation().getPath().split("/");
+        assertThat(path[4]).isNotNull();
     }
 
     @Test
