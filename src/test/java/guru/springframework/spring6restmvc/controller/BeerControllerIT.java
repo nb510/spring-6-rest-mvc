@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class BeerControllerIT {
@@ -18,10 +20,30 @@ class BeerControllerIT {
     BeerController beerController;
     @Autowired
     BeerRepository beerRepository;
+
     @Test
     void testListBeer() {
         List<BeerDto> result = beerController.listBeers();
         assertThat(result.size()).isEqualTo(3);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    void testGetBeerByIdNotFound() {
+        List<BeerDto> beers = beerController.listBeers();
+
+        beerRepository.deleteById(beers.get(0).getId());
+
+        assertThrows(NotFoundException.class, () -> beerController.getBeerById(beers.get(0).getId()));
+    }
+
+    @Test
+    void testGetBeerById() {
+        List<BeerDto> beers = beerController.listBeers();
+
+        BeerDto result = beerController.getBeerById(beers.get(0).getId());
+        assertThat(result).isEqualTo(beers.get(0));
     }
 
     @Rollback
