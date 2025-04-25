@@ -1,6 +1,8 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
+import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,22 @@ class BeerControllerIT {
     BeerController beerController;
     @Autowired
     BeerRepository beerRepository;
+    @Autowired
+    BeerMapper beerMapper;
+
+    @Test
+    void testUpdateBeer() {
+        Beer beer = beerRepository.findAll().get(0);
+        BeerDto beerDto = beerMapper.toBeerDto(beer);
+        beerDto.setVersion(null);
+        beerDto.setId(null);
+        beerDto.setBeerName("UPDATED");
+
+        beerController.updateBeer(beer.getId(), beerDto);
+
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getBeerName()).isEqualTo("UPDATED");
+    }
 
     @Test
     void testListBeer() {
