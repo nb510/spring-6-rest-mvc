@@ -30,6 +30,35 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    void testPatchBeerNotFound() {
+        Beer beer = beerRepository.findAll().get(0);
+        BeerDto beerDto = BeerDto.builder().build();
+        beerDto.setBeerName("UPDATED");
+
+        beerRepository.deleteById(beer.getId());
+
+        assertThrows(NotFoundException.class, () -> beerController.patchBeer(beer.getId(), beerDto));
+    }
+
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchBeer() {
+        Beer beer = beerRepository.findAll().get(0);
+        BeerDto beerDto = BeerDto.builder().build();
+        beerDto.setBeerName("UPDATED");
+
+        beerController.patchBeer(beer.getId(), beerDto);
+
+        Beer updatedBeer = beerRepository.findById(beer.getId()).get();
+        assertThat(updatedBeer.getBeerName()).isEqualTo("UPDATED");
+        assertThat(updatedBeer.getVersion()).isEqualTo(beer.getVersion());
+        assertThat(updatedBeer.getUpc()).isEqualTo(beer.getUpc());
+    }
+
+    @Rollback
+    @Transactional
+    @Test
     void testDeleteBeerByIdNotFound() {
         Beer beer = beerRepository.findAll().get(0);
         UUID id = beer.getId();

@@ -1,5 +1,7 @@
 package guru.springframework.spring6restmvc.service;
 
+import guru.springframework.spring6restmvc.entities.Customer;
+import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.CustomerMapper;
 import guru.springframework.spring6restmvc.model.CustomerDto;
 import guru.springframework.spring6restmvc.repository.CustomerRepository;
@@ -33,21 +35,40 @@ public class CustomerServiceJpa implements CustomerService {
 
     @Override
     public CustomerDto createCustomer(CustomerDto customer) {
-        return null;
+        return customerMapper.toCustomerDto(customerRepository.save(customerMapper.toCustomer(customer)));
     }
 
     @Override
     public void updateCustomerById(UUID id, CustomerDto customer) {
-
+        customerRepository.findById(id).map(foundCustomer -> {
+                    foundCustomer.setCustomerName(customer.getCustomerName());
+                    return customer;
+                })
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public void deleteCustomerById(UUID id) {
-
+    public boolean deleteCustomerById(UUID id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public void patchCustomerById(UUID id, CustomerDto customer) {
+        Optional<Customer> foundCustomerOpt = customerRepository.findById(id);
+        if (foundCustomerOpt.isEmpty()) {
+            throw new NotFoundException();
+        }
 
+        Customer foundCustomer = foundCustomerOpt.get();
+        if (customer.getCustomerName() != null) {
+            foundCustomer.setCustomerName(customer.getCustomerName());
+        }
+        if (customer.getAge() != null) {
+            foundCustomer.setAge(foundCustomer.getAge());
+        }
     }
 }

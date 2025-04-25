@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.service;
 
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
@@ -7,6 +8,7 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +62,26 @@ public class BeerServiceJpa implements BeerService {
 
     @Override
     public void patchBeer(UUID id, BeerDto beer) {
+        Optional<Beer> foundBeerOpt = beerRepository.findById(id);
+        if (foundBeerOpt.isEmpty()) {
+            throw new NotFoundException();
+        }
 
+        Beer fondBeer = foundBeerOpt.get();
+        if (StringUtils.hasText(beer.getBeerName())){
+            fondBeer.setBeerName(beer.getBeerName());
+        }
+        if (beer.getBeerStyle() != null) {
+            fondBeer.setBeerStyle(beer.getBeerStyle());
+        }
+        if (beer.getPrice() != null) {
+            fondBeer.setPrice(beer.getPrice());
+        }
+        if (beer.getQuantityOnHand() != null){
+            fondBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        }
+        if (StringUtils.hasText(beer.getUpc())) {
+            fondBeer.setUpc(beer.getUpc());
+        }
     }
 }
