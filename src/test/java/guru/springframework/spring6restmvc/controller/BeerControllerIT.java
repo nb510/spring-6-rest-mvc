@@ -13,6 +13,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,6 +26,22 @@ class BeerControllerIT {
     BeerRepository beerRepository;
     @Autowired
     BeerMapper beerMapper;
+
+    @Rollback
+    @Transactional
+    @Test
+    void testUpdateBeerNotFound() {
+        Beer beer = beerRepository.findAll().get(0);
+        BeerDto beerDto = beerMapper.toBeerDto(beer);
+        beerDto.setVersion(null);
+        beerDto.setId(null);
+        beerDto.setBeerName("UPDATED");
+
+        UUID id = beer.getId();
+        beerRepository.deleteById(id);
+
+        assertThrows(NotFoundException.class, () -> beerController.updateBeer(beer.getId(), beerDto));
+    }
 
     @Test
     void testUpdateBeer() {
