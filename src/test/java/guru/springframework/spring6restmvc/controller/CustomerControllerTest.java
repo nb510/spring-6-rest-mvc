@@ -71,6 +71,8 @@ class CustomerControllerTest {
     public void testDeleteCustomer() throws Exception {
         UUID id = UUID.randomUUID();
 
+        given(customerService.deleteCustomerById(id)).willReturn(true);
+
         mockMvc.perform(delete(CUSTOMER_PATH_ID, id))
                 .andExpect(status().isNoContent());
 
