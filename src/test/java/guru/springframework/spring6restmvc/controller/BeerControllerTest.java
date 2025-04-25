@@ -93,6 +93,9 @@ class BeerControllerTest {
     @Test
     void deleteBeer() throws Exception {
         UUID id = UUID.randomUUID();
+
+        given(beerService.deleteBeerById(id)).willReturn(true);
+
         mockMvc.perform(delete(BEER_PATH_ID, id).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
