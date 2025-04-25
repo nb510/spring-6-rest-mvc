@@ -30,6 +30,17 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    void testDeleteBeerByIdNotFound() {
+        Beer beer = beerRepository.findAll().get(0);
+        UUID id = beer.getId();
+        beerRepository.deleteById(id);
+
+        assertThrows(NotFoundException.class, () -> beerController.deleteBeer(beer.getId()));
+    }
+
+    @Rollback
+    @Transactional
+    @Test
     void testDeleteBeerById() {
         Beer beer = beerRepository.findAll().get(0);
 
