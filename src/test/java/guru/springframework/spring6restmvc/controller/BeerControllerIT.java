@@ -30,6 +30,17 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    void testDeleteBeerById() {
+        Beer beer = beerRepository.findAll().get(0);
+
+        beerController.deleteBeer(beer.getId());
+
+        assertThat(beerRepository.findById(beer.getId())).isEmpty();
+    }
+
+    @Rollback
+    @Transactional
+    @Test
     void testUpdateBeerNotFound() {
         Beer beer = beerRepository.findAll().get(0);
         BeerDto beerDto = beerMapper.toBeerDto(beer);
