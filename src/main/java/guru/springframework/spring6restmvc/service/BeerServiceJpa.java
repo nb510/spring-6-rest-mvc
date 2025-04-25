@@ -1,6 +1,5 @@
 package guru.springframework.spring6restmvc.service;
 
-import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
@@ -40,17 +39,14 @@ public class BeerServiceJpa implements BeerService {
 
     @Override
     public void updateBeerById(UUID id, BeerDto beer) {
-        Optional<Beer> foundBeerOpt = beerRepository.findById(id);
-        if (foundBeerOpt.isEmpty()) {
-            throw new NotFoundException();
-        }
-
-        Beer foundBeer = foundBeerOpt.get();
-        foundBeer.setBeerName(beer.getBeerName());
-        foundBeer.setBeerStyle(beer.getBeerStyle());
-        foundBeer.setUpc(beer.getUpc());
-        foundBeer.setPrice(beer.getPrice());
-        beerRepository.save(foundBeer);
+        beerRepository.findById(id).map(foundBeer -> {
+            foundBeer.setBeerName(beer.getBeerName());
+            foundBeer.setBeerStyle(beer.getBeerStyle());
+            foundBeer.setUpc(beer.getUpc());
+            foundBeer.setPrice(beer.getPrice());
+            beerRepository.save(foundBeer);
+            return foundBeer;
+        }).orElseThrow(NotFoundException::new);
     }
 
     @Override
