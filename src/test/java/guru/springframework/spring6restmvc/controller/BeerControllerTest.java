@@ -46,7 +46,75 @@ class BeerControllerTest {
     ArgumentCaptor<BeerDto> beerCaptor;
 
     @Test
-    public void testEmptyBeerName() throws Exception {
+    public void testUpdateError() throws Exception {
+        BeerDto beer = BeerDto.builder()
+                .beerName("")
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("2135135")
+                .price(new BigDecimal("11.99"))
+                .quantityOnHand(392)
+                .build();
+
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(beer);
+
+        MvcResult mvcResult = mockMvc.perform(put(BEER_PATH_ID, UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.beerName.length()", is(1)))
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testInvalidPrice() throws Exception {
+        BeerDto beer = BeerDto.builder()
+                .beerName("some")
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("2135135")
+                .price(new BigDecimal("-11.99"))
+                .quantityOnHand(392)
+                .build();
+
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(beer);
+
+        MvcResult mvcResult = mockMvc.perform(post(BEER_PATH)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.price.length()", is(1)))
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testEmptyBeerStyle() throws Exception {
+        BeerDto beer = BeerDto.builder()
+                .beerName("some")
+                .beerStyle(null)
+                .upc("2135135")
+                .price(new BigDecimal("11.99"))
+                .quantityOnHand(392)
+                .build();
+
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(beer);
+
+        MvcResult mvcResult = mockMvc.perform(post(BEER_PATH)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.beerStyle.length()", is(1)))
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testEmptyBeerNameAndUpc() throws Exception {
         BeerDto beer = BeerDto.builder()
                 .beerName(null)
                 .beerStyle(BeerStyle.PALE_ALE)
@@ -132,11 +200,14 @@ class BeerControllerTest {
     @Test
     void testUpdateBeer() throws Exception {
         BeerDto beer = BeerDto.builder()
-                .id(UUID.randomUUID())
-                .quantityOnHand(0)
+                .beerName("Crank")
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("12356222")
+                .price(new BigDecimal("11.99"))
+                .quantityOnHand(392)
                 .build();
 
-        mockMvc.perform(put(BEER_PATH_ID, beer.getId())
+        mockMvc.perform(put(BEER_PATH_ID, UUID.randomUUID())
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))

@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.service.BeerService;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +25,7 @@ public class BeerController {
     private final BeerService beerService;
 
     @PatchMapping(BEER_PATH_ID)
-    public ResponseEntity<Void> patchBeer(@PathVariable("beerId") UUID id, @RequestBody BeerDto beer) {
+    public ResponseEntity<Void> patchBeer(@Validated @PathVariable("beerId") UUID id, @RequestBody BeerDto beer) {
         beerService.patchBeer(id, beer);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -39,7 +40,7 @@ public class BeerController {
     }
 
     @PutMapping(BEER_PATH_ID)
-    public ResponseEntity<BeerDto> updateBeer(@PathVariable("beerId") UUID id, @RequestBody BeerDto beer) {
+    public ResponseEntity<BeerDto> updateBeer(@NotNull @PathVariable("beerId") UUID id, @Validated @RequestBody BeerDto beer) {
         beerService.updateBeerById(id, beer);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
