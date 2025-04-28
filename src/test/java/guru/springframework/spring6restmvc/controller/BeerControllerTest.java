@@ -50,7 +50,7 @@ class BeerControllerTest {
         BeerDto beer = BeerDto.builder()
                 .beerName(null)
                 .beerStyle(BeerStyle.PALE_ALE)
-                .upc("12356222")
+                .upc(null)
                 .price(new BigDecimal("11.99"))
                 .quantityOnHand(392)
                 .build();
@@ -61,7 +61,9 @@ class BeerControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
-                .andExpect(status().is4xxClientError()).andReturn();
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.beerName.length()", is(2)))
+                .andReturn();
 
         System.out.println(mvcResult.getResponse().getContentAsString());
     }
