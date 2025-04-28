@@ -45,6 +45,25 @@ class BeerControllerTest {
     ArgumentCaptor<BeerDto> beerCaptor;
 
     @Test
+    public void testEmptyBeerName() throws Exception {
+        BeerDto beer = BeerDto.builder()
+                .beerName(null)
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("12356222")
+                .price(new BigDecimal("11.99"))
+                .quantityOnHand(392)
+                .build();
+
+        given(beerService.createBeer(any(BeerDto.class))).willReturn(beer);
+
+        mockMvc.perform(post(BEER_PATH)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(beer)))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     public void testException() throws Exception {
         given(beerService.getBeerById(any())).willReturn(Optional.empty());
 
