@@ -83,5 +83,6 @@ public class BeerServiceJpa implements BeerService {
         if (StringUtils.hasText(beer.getUpc())) {
             fondBeer.setUpc(beer.getUpc());
         }
+        beerRepository.save(fondBeer);
     }
 }
