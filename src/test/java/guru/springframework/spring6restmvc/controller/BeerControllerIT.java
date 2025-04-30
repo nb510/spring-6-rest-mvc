@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -53,14 +54,17 @@ class BeerControllerIT {
         Beer beer = beerRepository.findAll().get(0);
 
         BeerDto beerDto = BeerDto.builder()
-                .beerName("Updated name tooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo long")
+                .beerName(" ")
                 .build();
 
-        mockMvc.perform(patch(BEER_PATH_ID, beer.getId())
+        MvcResult mvcResult = mockMvc.perform(patch(BEER_PATH_ID, beer.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        System.out.println(mvcResult.getResponse().getContentAsString());
     }
 
     @Rollback

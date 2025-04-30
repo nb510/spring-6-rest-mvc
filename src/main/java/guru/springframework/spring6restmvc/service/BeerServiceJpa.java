@@ -68,7 +68,7 @@ public class BeerServiceJpa implements BeerService {
         }
 
         Beer fondBeer = foundBeerOpt.get();
-        if (StringUtils.hasText(beer.getBeerName())){
+        if (true){
             fondBeer.setBeerName(beer.getBeerName());
         }
         if (beer.getBeerStyle() != null) {

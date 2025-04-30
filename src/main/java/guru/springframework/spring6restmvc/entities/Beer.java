@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.entities;
 
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -27,7 +28,7 @@ public class Beer {
     @Version
     private Integer version;
 
-    @NotNull
+    @NotBlank
     @Size(max = 50)
     private String beerName;
 
