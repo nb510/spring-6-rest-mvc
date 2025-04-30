@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.entities;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -27,12 +28,14 @@ public class Beer {
     private Integer version;
 
     @NotNull
+    @Size(max = 50)
     private String beerName;
 
     @NotNull
     private BeerStyle beerStyle;
 
     @NotNull
+    @Size(max = 255)
     private String upc;
 
     private Integer quantityOnHand;
