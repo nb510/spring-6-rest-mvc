@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -49,7 +48,6 @@ public class BootstrapData implements CommandLineRunner {
         beerRepository.saveAll(List.of(beer1, beer2, beer3));
 
         Customer customer1 = Customer.builder()
-                .id(UUID.randomUUID())
                 .customerName("Customer1")
                 .age(23)
                 .version(0)
@@ -58,7 +56,6 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Customer customer2 = Customer.builder()
-                .id(UUID.randomUUID())
                 .customerName("Customer2")
                 .age(30)
                 .version(0)
@@ -67,7 +64,6 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Customer customer3 = Customer.builder()
-                .id(UUID.randomUUID())
                 .customerName("Customer3")
                 .version(0)
                 .createdDate(LocalDateTime.now())
