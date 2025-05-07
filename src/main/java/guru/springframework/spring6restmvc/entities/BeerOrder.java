@@ -18,7 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Customer {
+public class BeerOrder {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @UuidGenerator
@@ -26,20 +27,21 @@ public class Customer {
     @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
 
-    private String email;
-
     @Version
     private Integer version;
 
-    private String customerName;
-    private Integer age;
-
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    private LocalDateTime lastModifiedDat;
+    private LocalDateTime lastModifiedDate;
 
-    @OneToMany(mappedBy = "customer")
-    private Set<BeerOrder> beerOrders;
+    @ManyToOne
+    private Customer customer;
+
+    @OneToMany(mappedBy = "beerOrder")
+    private Set<BeerOrderLine> beerOrderLines;
+
+    private String customerRef;
 }
