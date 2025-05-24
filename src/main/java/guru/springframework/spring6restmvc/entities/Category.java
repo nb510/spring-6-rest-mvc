@@ -1,17 +1,12 @@
 package guru.springframework.spring6restmvc.entities;
 
-import guru.springframework.spring6restmvc.model.BeerStyle;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.math.BigDecimal;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -23,7 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Beer {
+public class Category {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @UuidGenerator
@@ -34,34 +30,17 @@ public class Beer {
     @Version
     private Integer version;
 
-    @NotBlank
-    @Size(max = 50)
-    private String beerName;
-
-    @NotNull
-    private BeerStyle beerStyle;
-
-    @NotNull
-    @Size(max = 255)
-    private String upc;
-
-    private Integer quantityOnHand;
-
-    @NotNull
-    private BigDecimal price;
-
     @CreationTimestamp
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
-    private LocalDateTime updateDate;
+    private LocalDateTime lastModifiedDate;
 
-    @OneToMany(mappedBy = "beer")
-    private Set<BeerOrderLine> beerOrderLine;
+    private String description;
 
     @ManyToMany
     @JoinTable(name = "beer_category",
-            joinColumns = @JoinColumn(name = "beer_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories;
+            joinColumns = @JoinColumn(name = "category_id"),
+            inverseJoinColumns = @JoinColumn(name = "beer_id"))
+    private Set<Beer> beers;
 }
