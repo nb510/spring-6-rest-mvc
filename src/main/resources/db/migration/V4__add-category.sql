@@ -1,5 +1,5 @@
-drop table if exists category;
 drop table if exists beer_category;
+drop table if exists category;
 
 CREATE TABLE category (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
