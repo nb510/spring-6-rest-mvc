@@ -1,7 +1,10 @@
 package guru.springframework.spring6restmvc.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,9 +19,21 @@ import java.util.UUID;
 @Setter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class BeerOrder {
+
+    public BeerOrder(UUID id, Integer version, LocalDateTime createdDate, LocalDateTime lastModifiedDate,
+                     Customer customer, Set<BeerOrderLine> beerOrderLines, String customerRef,
+                     BeerOrderShipment beerOrderShipment) {
+        this.id = id;
+        this.version = version;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.customer = customer;
+        this.beerOrderLines = beerOrderLines;
+        this.customerRef = customerRef;
+        this.setBeerOrderShipment(beerOrderShipment);
+    }
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -45,7 +60,12 @@ public class BeerOrder {
 
     private String customerRef;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "beer_order_shipment_id", unique = true)
     private BeerOrderShipment beerOrderShipment;
+
+    public void setBeerOrderShipment(BeerOrderShipment beerOrderShipment) {
+        this.beerOrderShipment = beerOrderShipment;
+        beerOrderShipment.setBeerOrder(this);
+    }
 }
