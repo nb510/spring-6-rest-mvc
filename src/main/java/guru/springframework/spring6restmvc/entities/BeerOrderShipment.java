@@ -7,18 +7,17 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class BeerOrder {
+@Builder
+public class BeerOrderShipment {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -28,24 +27,17 @@ public class BeerOrder {
     private UUID id;
 
     @Version
-    private Integer version;
+    private Long version;
+
+    @OneToOne(mappedBy = "beerOrderShipment")
+    private BeerOrder beerOrder;
+
+    private String trackingNumber;
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private Timestamp createdDate;
 
     @UpdateTimestamp
-    private LocalDateTime lastModifiedDate;
-
-    @ManyToOne
-    private Customer customer;
-
-    @OneToMany(mappedBy = "beerOrder")
-    private Set<BeerOrderLine> beerOrderLines;
-
-    private String customerRef;
-
-    @OneToOne
-    @JoinColumn(name = "beer_order_shipment_id", unique = true)
-    private BeerOrderShipment beerOrderShipment;
+    private Timestamp lastModifiedDate;
 }
