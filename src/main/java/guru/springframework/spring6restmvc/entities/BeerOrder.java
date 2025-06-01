@@ -66,6 +66,8 @@ public class BeerOrder {
 
     public void setBeerOrderShipment(BeerOrderShipment beerOrderShipment) {
         this.beerOrderShipment = beerOrderShipment;
-        beerOrderShipment.setBeerOrder(this);
+        if (beerOrderShipment != null) {
+            beerOrderShipment.setBeerOrder(this);
+        }
     }
 }
