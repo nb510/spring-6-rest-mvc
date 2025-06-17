@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
 import java.util.UUID;
 
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH_ID;
@@ -150,8 +150,8 @@ class BeerControllerIT {
 
     @Test
     void testListBeer() {
-        List<BeerDto> result = beerController.listBeers();
-        assertThat(result.size()).isEqualTo(2413);
+        Page<BeerDto> result = beerController.listBeers(null, 2413);
+        assertThat(result.getContent().size()).isEqualTo(2413);
     }
 
     @Test
@@ -176,19 +176,19 @@ class BeerControllerIT {
     @Transactional
     @Rollback
     void testGetBeerByIdNotFound() {
-        List<BeerDto> beers = beerController.listBeers();
+        Page<BeerDto> beers = beerController.listBeers(null, null);
 
-        beerRepository.deleteById(beers.get(0).getId());
+        beerRepository.deleteById(beers.getContent().getFirst().getId());
 
-        assertThrows(NotFoundException.class, () -> beerController.getBeerById(beers.get(0).getId()));
+        assertThrows(NotFoundException.class, () -> beerController.getBeerById(beers.getContent().getFirst().getId()));
     }
 
     @Test
     void testGetBeerById() {
-        List<BeerDto> beers = beerController.listBeers();
+        Page<BeerDto> beers = beerController.listBeers(null, null);
 
-        BeerDto result = beerController.getBeerById(beers.get(0).getId());
-        assertThat(result).isEqualTo(beers.get(0));
+        BeerDto result = beerController.getBeerById(beers.getContent().getFirst().getId());
+        assertThat(result).isEqualTo(beers.getContent().getFirst());
     }
 
     @Rollback
@@ -197,8 +197,8 @@ class BeerControllerIT {
     void testEmptyList() {
         beerRepository.deleteAll();
 
-        List<BeerDto> result = beerController.listBeers();
-        assertThat(result.size()).isEqualTo(0);
+        Page<BeerDto> result = beerController.listBeers(null, null);
+        assertThat(result.getContent().size()).isEqualTo(0);
     }
 
 }

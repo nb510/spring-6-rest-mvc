@@ -7,10 +7,12 @@ import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,15 +20,23 @@ import java.util.UUID;
 @Primary
 @RequiredArgsConstructor
 public class BeerServiceJpa implements BeerService {
+    public static final int DEFAULT_PAGE_NUMBER = 0;
+    public static final int DEFAULT_PAGE_SIZE = 10;
+
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
     @Override
-    public List<BeerDto> listBeers() {
-        return beerRepository.findAll()
-                .stream()
-                .map(beerMapper::toBeerDto)
-                .toList();
+    public Page<BeerDto> listBeers(Integer pageNumber, Integer pageSize) {
+        Page<Beer> result = beerRepository.findAll(buildPageable(pageNumber, pageSize));
+        return result.map(beerMapper::toBeerDto);
+    }
+
+    protected Pageable buildPageable(Integer pageNumber, Integer pageSize) {
+        int queryPageNumber = pageNumber == null || pageSize < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
+        int queryPageSize = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+
+        return PageRequest.of(queryPageNumber, queryPageSize);
     }
 
     @Override

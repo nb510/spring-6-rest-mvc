@@ -3,12 +3,16 @@ package guru.springframework.spring6restmvc.service;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -60,8 +64,10 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public List<BeerDto> listBeers() {
-        return new ArrayList<>(beerMap.values());
+    public Page<BeerDto> listBeers(Integer pageNumber, Integer pageSize) {
+        Page<BeerDto> page = Page.empty();
+        page.getContent().addAll(beerMap.values());
+        return page;
     }
 
     @Override

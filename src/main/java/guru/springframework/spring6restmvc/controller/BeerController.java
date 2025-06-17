@@ -6,13 +6,13 @@ import guru.springframework.spring6restmvc.service.BeerService;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,8 +56,9 @@ public class BeerController {
     }
 
     @GetMapping(BEER_PATH)
-    public List<BeerDto> listBeers() {
-        return beerService.listBeers();
+    public Page<BeerDto> listBeers(@RequestParam(value = "page", required = false) Integer pageNumber,
+                                   @RequestParam(value = "size", required = false) Integer pageSize) {
+        return beerService.listBeers(pageNumber, pageSize);
     }
 
     @GetMapping(BEER_PATH_ID)
