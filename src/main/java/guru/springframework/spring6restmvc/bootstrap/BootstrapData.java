@@ -28,6 +28,10 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        if (!beerRepository.findAll().isEmpty()) {
+            return;
+        }
+
         Beer beer1 = Beer.builder()
                 .beerName("Galaxy Cat")
                 .beerStyle(BeerStyle.PALE_ALE)

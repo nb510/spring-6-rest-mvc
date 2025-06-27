@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.service;
 
 import guru.springframework.spring6restmvc.model.BeerCsvRecord;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("default")
 public class BeerCsvServiceImplTest {
 
 
