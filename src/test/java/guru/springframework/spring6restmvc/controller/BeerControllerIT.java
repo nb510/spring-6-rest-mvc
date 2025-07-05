@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -52,6 +53,15 @@ class BeerControllerIT {
 
     MockMvc mockMvc;
 
+    static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt ->
+            jwt.claims(claims -> {
+                        claims.put("scope", "message.read");
+                        claims.put("scope", "message.write");
+                    })
+                    .subject("messaging-client")
+                    .notBefore(Instant.now().minusSeconds(5L))
+    );
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
@@ -68,14 +78,7 @@ class BeerControllerIT {
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(patch(BEER_PATH_ID, beer.getId())
-                        .with(jwt().jwt(jwt -> {
-                            jwt.claims(claims -> {
-                                        claims.put("scope", "message.read");
-                                        claims.put("scope", "message.write");
-                                    })
-                                    .subject("messaging-client")
-                                    .notBefore(Instant.now().minusSeconds(5L));
-                        }))
+                        .with(jwtRequestPostProcessor)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDto)))
