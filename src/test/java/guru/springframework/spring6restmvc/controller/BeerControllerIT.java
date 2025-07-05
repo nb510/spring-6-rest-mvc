@@ -10,7 +10,6 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
@@ -24,12 +23,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,11 +52,6 @@ class BeerControllerIT {
 
     MockMvc mockMvc;
 
-    @Value("${spring.security.user.name}")
-    String user;
-    @Value("${spring.security.user.password}")
-    String password;
-
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
@@ -73,7 +68,14 @@ class BeerControllerIT {
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(patch(BEER_PATH_ID, beer.getId())
-                        .with(httpBasic(user, password))
+                        .with(jwt().jwt(jwt -> {
+                            jwt.claims(claims -> {
+                                        claims.put("scope", "message.read");
+                                        claims.put("scope", "message.write");
+                                    })
+                                    .subject("messaging-client")
+                                    .notBefore(Instant.now().minusSeconds(5L));
+                        }))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDto)))
