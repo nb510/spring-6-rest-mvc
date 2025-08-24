@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -55,8 +56,7 @@ class BeerControllerIT {
 
     static SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor jwtRequestPostProcessor = jwt().jwt(jwt ->
             jwt.claims(claims -> {
-                        claims.put("scope", "message.read");
-                        claims.put("scope", "message.write");
+                        claims.put("scope", "message.read message.write");
                     })
                     .subject("messaging-client")
                     .notBefore(Instant.now().minusSeconds(5L))
@@ -90,6 +90,7 @@ class BeerControllerIT {
 
     @Rollback
     @Transactional
+    @WithMockUser(authorities = "SCOPE_message.write")
     @Test
     void testPatchBeerNotFound() {
         Beer beer = beerRepository.findAll().get(0);
@@ -104,6 +105,7 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testPatchBeer() {
         Beer beer = beerRepository.findAll().get(0);
         BeerDto beerDto = BeerDto.builder().build();
@@ -120,6 +122,7 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testDeleteBeerByIdNotFound() {
         Beer beer = beerRepository.findAll().get(0);
         UUID id = beer.getId();
@@ -131,6 +134,7 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testDeleteBeerById() {
         Beer beer = beerRepository.findAll().get(0);
 
@@ -142,6 +146,7 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testUpdateBeerNotFound() {
         Beer beer = beerRepository.findAll().get(0);
         BeerDto beerDto = beerMapper.toBeerDto(beer);
@@ -155,7 +160,10 @@ class BeerControllerIT {
         assertThrows(NotFoundException.class, () -> beerController.updateBeer(beer.getId(), beerDto));
     }
 
+    @Rollback
+    @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testUpdateBeer() {
         Beer beer = beerRepository.findAll().get(0);
         BeerDto beerDto = beerMapper.toBeerDto(beer);
@@ -170,6 +178,7 @@ class BeerControllerIT {
     }
 
     @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
     void testListBeer() {
         Page<BeerDto> result = beerController.listBeers(null, 2413);
         assertThat(result.getContent().size()).isEqualTo(2413);
@@ -178,6 +187,7 @@ class BeerControllerIT {
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testCreateBeer() {
         BeerDto beerDto = BeerDto.builder()
                 .beerName("super Beer")
@@ -196,6 +206,7 @@ class BeerControllerIT {
     @Test
     @Transactional
     @Rollback
+    @WithMockUser(authorities = "SCOPE_message.read")
     void testGetBeerByIdNotFound() {
         Page<BeerDto> beers = beerController.listBeers(null, null);
 
@@ -205,6 +216,7 @@ class BeerControllerIT {
     }
 
     @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
     void testGetBeerById() {
         Page<BeerDto> beers = beerController.listBeers(null, null);
 
@@ -215,6 +227,7 @@ class BeerControllerIT {
     @Rollback
     @Transactional
     @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
     void testEmptyList() {
         beerRepository.deleteAll();
 
