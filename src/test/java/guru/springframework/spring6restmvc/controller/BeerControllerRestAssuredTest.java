@@ -66,4 +66,20 @@ public class BeerControllerRestAssuredTest {
 
     }
 
+    @Test
+    void testGetBeerById() {
+        String beerId = given().contentType(ContentType.JSON)
+                .when()
+                .get("/api/v1/beer")
+                .andReturn()
+                .jsonPath().get("content[0].id");
+
+        given().contentType(ContentType.JSON)
+                .filter(validationFilter)
+                .when()
+                .get("/api/v1/beer/{beerId}", beerId)
+                .then()
+                .assertThat().statusCode(200);
+    }
+
 }
