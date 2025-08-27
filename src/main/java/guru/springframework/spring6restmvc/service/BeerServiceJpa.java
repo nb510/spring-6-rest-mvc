@@ -7,7 +7,10 @@ import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +31,7 @@ public class BeerServiceJpa implements BeerService {
 
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
+    private final CacheManager cacheManager;
 
     @Cacheable(cacheNames = "beerListCache")
     @Override
@@ -54,11 +58,15 @@ public class BeerServiceJpa implements BeerService {
 
     @Override
     public BeerDto createBeer(BeerDto beer) {
+        cacheManager.getCache("beerListCache").clear();
+
         return beerMapper.toBeerDto(beerRepository.save(beerMapper.toBeer(beer)));
     }
 
     @Override
     public void updateBeerById(UUID id, BeerDto beer) {
+        clearBeerCache(id);
+
         beerRepository.findById(id).map(foundBeer -> {
             foundBeer.setBeerName(beer.getBeerName());
             foundBeer.setBeerStyle(beer.getBeerStyle());
@@ -69,6 +77,10 @@ public class BeerServiceJpa implements BeerService {
         }).orElseThrow(NotFoundException::new);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "beerCache", key = "#id"),
+            @CacheEvict(cacheNames = "beerListCache", allEntries = true)
+    })
     @Override
     public boolean deleteBeerById(UUID id) {
         if (beerRepository.existsById(id)) {
@@ -78,6 +90,10 @@ public class BeerServiceJpa implements BeerService {
         return false;
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "beerCache", key = "#id"),
+            @CacheEvict(cacheNames = "beerListCache", allEntries = true)
+    })
     @Override
     public void patchBeer(UUID id, BeerDto beer) {
         Optional<Beer> foundBeerOpt = beerRepository.findById(id);
@@ -102,5 +118,10 @@ public class BeerServiceJpa implements BeerService {
             fondBeer.setUpc(beer.getUpc());
         }
         beerRepository.save(fondBeer);
+    }
+
+    private void clearBeerCache(UUID beerId) {
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
     }
 }
