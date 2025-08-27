@@ -29,8 +29,11 @@ public class BeerServiceJpa implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
 
+    @Cacheable(cacheNames = "beerListCache")
     @Override
     public Page<BeerDto> listBeers(Integer pageNumber, Integer pageSize) {
+        log.info("Calling listBeers");
+
         Page<Beer> result = beerRepository.findAll(buildPageable(pageNumber, pageSize));
         return result.map(beerMapper::toBeerDto);
     }
