@@ -7,7 +7,9 @@ import guru.springframework.spring6restmvc.model.CustomerDto;
 import guru.springframework.spring6restmvc.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -42,11 +44,16 @@ public class CustomerServiceJpa implements CustomerService {
         return customerRepository.findById(id).map(customerMapper::toCustomerDto);
     }
 
+    @CacheEvict(cacheNames = "customerListCache", allEntries = true)
     @Override
     public CustomerDto createCustomer(CustomerDto customer) {
         return customerMapper.toCustomerDto(customerRepository.save(customerMapper.toCustomer(customer)));
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "customerCache", key = "#id"),
+            @CacheEvict(cacheNames = "customerListCache", allEntries = true)
+    })
     @Override
     public void updateCustomerById(UUID id, CustomerDto customer) {
         customerRepository.findById(id).map(foundCustomer -> {
@@ -56,6 +63,10 @@ public class CustomerServiceJpa implements CustomerService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "customerCache", key = "#id"),
+            @CacheEvict(cacheNames = "customerListCache", allEntries = true)
+    })
     @Override
     public boolean deleteCustomerById(UUID id) {
         if (customerRepository.existsById(id)) {
@@ -65,6 +76,10 @@ public class CustomerServiceJpa implements CustomerService {
         return false;
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "customerCache", key = "#id"),
+            @CacheEvict(cacheNames = "customerListCache", allEntries = true)
+    })
     @Override
     public void patchCustomerById(UUID id, CustomerDto customer) {
         Optional<Customer> foundCustomerOpt = customerRepository.findById(id);
