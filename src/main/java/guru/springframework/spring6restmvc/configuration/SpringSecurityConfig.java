@@ -15,15 +15,19 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
 
     @Bean
+    public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers("/v3/api-docs**", "/v3/api-docs/**", "/swagger-ui/**",  "/swagger-ui.html")
                         .permitAll()
-
-                        .requestMatchers(EndpointRequest.toAnyEndpoint())
-                        .permitAll()
-
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
