@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.configuration;
 
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +20,10 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(customizer -> customizer
                         .requestMatchers("/v3/api-docs**", "/v3/api-docs/**", "/swagger-ui/**",  "/swagger-ui.html")
                         .permitAll()
+
+                        .requestMatchers(EndpointRequest.toAnyEndpoint())
+                        .permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
