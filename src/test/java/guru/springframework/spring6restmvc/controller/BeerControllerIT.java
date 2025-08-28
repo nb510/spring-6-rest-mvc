@@ -7,6 +7,7 @@ import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
+import guru.springframework.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ class BeerControllerIT {
     BeerController beerController;
     @Autowired
     BeerRepository beerRepository;
+    @Autowired
+    BeerService beerService;
     @Autowired
     BeerMapper beerMapper;
 
@@ -210,7 +213,7 @@ class BeerControllerIT {
     void testGetBeerByIdNotFound() {
         Page<BeerDto> beers = beerController.listBeers(null, null);
 
-        beerRepository.deleteById(beers.getContent().getFirst().getId());
+        beerService.deleteBeerById(beers.getContent().getFirst().getId());
 
         assertThrows(NotFoundException.class, () -> beerController.getBeerById(beers.getContent().getFirst().getId()));
     }
