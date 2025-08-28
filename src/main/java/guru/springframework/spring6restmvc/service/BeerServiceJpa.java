@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.service;
 
 import guru.springframework.spring6restmvc.entities.Beer;
+import guru.springframework.spring6restmvc.events.BeerCreatedEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
@@ -11,10 +12,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +35,7 @@ public class BeerServiceJpa implements BeerService {
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
     private final CacheManager cacheManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Cacheable(cacheNames = "beerListCache")
     @Override
@@ -60,7 +64,14 @@ public class BeerServiceJpa implements BeerService {
     public BeerDto createBeer(BeerDto beer) {
         cacheManager.getCache("beerListCache").clear();
 
-        return beerMapper.toBeerDto(beerRepository.save(beerMapper.toBeer(beer)));
+        Beer createdBeer = beerRepository.save(beerMapper.toBeer(beer));
+
+        applicationEventPublisher.publishEvent(
+                new BeerCreatedEvent(
+                        createdBeer,
+                        SecurityContextHolder.getContext().getAuthentication()));
+
+        return beerMapper.toBeerDto(createdBeer);
     }
 
     @Override
