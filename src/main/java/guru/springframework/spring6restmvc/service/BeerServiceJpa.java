@@ -66,6 +66,10 @@ public class BeerServiceJpa implements BeerService {
 
         Beer createdBeer = beerRepository.save(beerMapper.toBeer(beer));
 
+
+        log.info("Thread name: {}", Thread.currentThread().getName());
+        log.info("Thread ID: {}", Thread.currentThread().threadId());
+
         applicationEventPublisher.publishEvent(
                 new BeerCreatedEvent(
                         createdBeer,
