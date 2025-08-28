@@ -2,6 +2,9 @@ package guru.springframework.spring6restmvc.service;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.events.BeerCreatedEvent;
+import guru.springframework.spring6restmvc.events.BeerDeleteEvent;
+import guru.springframework.spring6restmvc.events.BeerPatchEvent;
+import guru.springframework.spring6restmvc.events.BeerUpdateEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
@@ -84,6 +87,12 @@ public class BeerServiceJpa implements BeerService {
             foundBeer.setUpc(beer.getUpc());
             foundBeer.setPrice(beer.getPrice());
             beerRepository.save(foundBeer);
+
+            applicationEventPublisher.publishEvent(
+                    new BeerUpdateEvent(
+                            foundBeer,
+                            SecurityContextHolder.getContext().getAuthentication()));
+
             return foundBeer;
         }).orElseThrow(NotFoundException::new);
     }
@@ -96,6 +105,12 @@ public class BeerServiceJpa implements BeerService {
     public boolean deleteBeerById(UUID id) {
         if (beerRepository.existsById(id)) {
             beerRepository.deleteById(id);
+
+            applicationEventPublisher.publishEvent(
+                    new BeerDeleteEvent(
+                            Beer.builder().id(id).build(),
+                            SecurityContextHolder.getContext().getAuthentication()));
+
             return true;
         }
         return false;
@@ -129,6 +144,11 @@ public class BeerServiceJpa implements BeerService {
             fondBeer.setUpc(beer.getUpc());
         }
         beerRepository.save(fondBeer);
+
+        applicationEventPublisher.publishEvent(
+                new BeerPatchEvent(
+                        fondBeer,
+                        SecurityContextHolder.getContext().getAuthentication()));
     }
 
     private void clearBeerCache(UUID beerId) {
