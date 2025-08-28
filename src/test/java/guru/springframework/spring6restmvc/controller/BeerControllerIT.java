@@ -3,12 +3,14 @@ package guru.springframework.spring6restmvc.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.configuration.SpringSecurityConfig;
 import guru.springframework.spring6restmvc.entities.Beer;
+import guru.springframework.spring6restmvc.events.BeerCreatedEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import guru.springframework.spring6restmvc.service.BeerService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -42,6 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@RecordApplicationEvents
 @ActiveProfiles("default")
 @Import(SpringSecurityConfig.class)
 class BeerControllerIT {
@@ -53,6 +58,8 @@ class BeerControllerIT {
     BeerService beerService;
     @Autowired
     BeerMapper beerMapper;
+    @Autowired
+    ApplicationEvents applicationEvents;
 
     @Autowired
     WebApplicationContext wac;
@@ -93,6 +100,10 @@ class BeerControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beer)))
                 .andExpect(status().isCreated());
+
+        Assertions.assertEquals(1, applicationEvents
+                .stream(BeerCreatedEvent.class)
+                .count());
     }
 
     @Test
