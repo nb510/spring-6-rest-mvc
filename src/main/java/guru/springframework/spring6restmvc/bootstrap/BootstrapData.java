@@ -1,11 +1,9 @@
 package guru.springframework.spring6restmvc.bootstrap;
 
-import guru.springframework.spring6restmvc.entities.Beer;
-import guru.springframework.spring6restmvc.entities.Customer;
+import guru.springframework.spring6restmvc.entities.*;
 import guru.springframework.spring6restmvc.model.BeerCsvRecord;
 import guru.springframework.spring6restmvc.model.BeerStyle;
-import guru.springframework.spring6restmvc.repository.BeerRepository;
-import guru.springframework.spring6restmvc.repository.CustomerRepository;
+import guru.springframework.spring6restmvc.repository.*;
 import guru.springframework.spring6restmvc.service.BeerCsvService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +23,9 @@ public class BootstrapData implements CommandLineRunner {
     private final BeerRepository beerRepository;
     private final CustomerRepository customerRepository;
     private final BeerCsvService beerCsvService;
+    private final BeerOrderRepository beerOrderRepository;
+    private final BeerOrderShipmentRepository beerOrderShipmentRepository;
+    private final BeerOrderLineRepository beerOrderLineRepository;
 
     @Override
     public void run(String... args) {
@@ -84,6 +85,7 @@ public class BootstrapData implements CommandLineRunner {
         customerRepository.saveAll(List.of(customer1, customer2, customer3));
 
         loadCsvData();
+        loadOrders();
     }
 
     private void loadCsvData() {
@@ -120,5 +122,70 @@ public class BootstrapData implements CommandLineRunner {
         }).toList();
 
         beerRepository.saveAll(beers);
+    }
+
+    private void loadOrders() {
+        List<Beer> beers = beerRepository.findAll();
+        List<Customer> customers = customerRepository.findAll();
+
+        // first order
+        BeerOrder order1 = BeerOrder.builder()
+                .customer(customers.get(0))
+                .build();
+
+        order1 = beerOrderRepository.save(order1);
+
+        BeerOrderLine orderLine1 = BeerOrderLine.builder()
+                .beerOrder(order1)
+                .beer(beers.get(0))
+                .orderQuantity(10)
+                .quantityAllocated(10)
+                .build();
+
+        BeerOrderLine orderLine2 = BeerOrderLine.builder()
+                .beerOrder(order1)
+                .beer(beers.get(1))
+                .orderQuantity(12)
+                .quantityAllocated(12)
+                .build();
+
+        BeerOrderShipment orderShipment1 = BeerOrderShipment.builder()
+                .trackingNumber("100-234-26426")
+                .build();
+        order1.setBeerOrderShipment(orderShipment1);
+
+        beerOrderRepository.save(order1);
+        beerOrderShipmentRepository.save(orderShipment1);
+        beerOrderLineRepository.saveAll(List.of(orderLine1, orderLine2));
+
+        // first order
+        BeerOrder order2 = BeerOrder.builder()
+                .customer(customers.get(1))
+                .build();
+
+        order2 = beerOrderRepository.save(order2);
+
+        BeerOrderLine orderLine4 = BeerOrderLine.builder()
+                .beerOrder(order2)
+                .beer(beers.get(0))
+                .orderQuantity(10)
+                .quantityAllocated(10)
+                .build();
+
+        BeerOrderLine orderLine5 = BeerOrderLine.builder()
+                .beerOrder(order2)
+                .beer(beers.get(1))
+                .orderQuantity(12)
+                .quantityAllocated(12)
+                .build();
+
+        BeerOrderShipment orderShipment2 = BeerOrderShipment.builder()
+                .trackingNumber("133-000-134134")
+                .build();
+        order2.setBeerOrderShipment(orderShipment2);
+
+        beerOrderRepository.save(order2);
+        beerOrderShipmentRepository.save(orderShipment2);
+        beerOrderLineRepository.saveAll(List.of(orderLine4, orderLine5));
     }
 }
