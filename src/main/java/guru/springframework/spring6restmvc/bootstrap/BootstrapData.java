@@ -154,8 +154,8 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
         order1.setBeerOrderShipment(orderShipment1);
 
-        beerOrderRepository.save(order1);
         beerOrderShipmentRepository.save(orderShipment1);
+        beerOrderRepository.save(order1);
         beerOrderLineRepository.saveAll(List.of(orderLine1, orderLine2));
 
         // first order
@@ -184,8 +184,8 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
         order2.setBeerOrderShipment(orderShipment2);
 
-        beerOrderRepository.save(order2);
         beerOrderShipmentRepository.save(orderShipment2);
+        beerOrderRepository.save(order2);
         beerOrderLineRepository.saveAll(List.of(orderLine4, orderLine5));
     }
 }

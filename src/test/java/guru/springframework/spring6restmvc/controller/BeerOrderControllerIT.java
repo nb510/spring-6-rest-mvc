@@ -53,4 +53,25 @@ public class BeerOrderControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()", is(1)));
     }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
+    void testListBeerOrderWithOptionBasic() throws Exception {
+        mockMvc.perform(get(BEER_ORDER_PATH)
+                        .param("option", "BASIC")
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].beerOrderShipment").isEmpty());
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
+    void testListBeerOrderWithOptionFull() throws Exception {
+        mockMvc.perform(get(BEER_ORDER_PATH)
+                        .param("option", "FULL")
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].beerOrderShipment").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].beerOrderShipment.trackingNumber").isNotEmpty());
+    }
 }

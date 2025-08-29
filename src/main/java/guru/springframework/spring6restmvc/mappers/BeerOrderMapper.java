@@ -3,9 +3,16 @@ package guru.springframework.spring6restmvc.mappers;
 import guru.springframework.spring6restmvc.entities.BeerOrder;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(
+        uses = {BeerOrderShipmentMapper.class}
+)
 public interface BeerOrderMapper {
 
-    BeerOrderDto orderToOrderDto(BeerOrder order);
+    @Mapping(target = "beerOrderShipment", ignore = true)
+    BeerOrderDto toDtoBasic(BeerOrder order);
+
+    BeerOrderDto toDtoFull(BeerOrder order);
+
 }

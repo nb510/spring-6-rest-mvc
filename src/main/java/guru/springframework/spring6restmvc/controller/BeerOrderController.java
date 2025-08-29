@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
+import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
 import guru.springframework.spring6restmvc.service.BeerOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,8 @@ public class BeerOrderController {
     @PreAuthorize("hasAuthority('SCOPE_message.read')")
     @GetMapping(BEER_ORDER_PATH)
     public Page<BeerOrderDto> listBeerOrders(@RequestParam(value = "page", required = false, defaultValue = DEFAULT_PAGE_NUMBER_S) int pageNumber,
-                                             @RequestParam(value = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE_S) int pageSize) {
-        return beerOrderService.listBeerOrders(pageNumber, pageSize);
+                                             @RequestParam(value = "size", required = false, defaultValue = DEFAULT_PAGE_SIZE_S) int pageSize,
+                                             @RequestParam(value = "option", required = false, defaultValue = "BASIC") OrderPopulationOptions option) {
+        return beerOrderService.listBeerOrders(pageNumber, pageSize, option);
     }
 }

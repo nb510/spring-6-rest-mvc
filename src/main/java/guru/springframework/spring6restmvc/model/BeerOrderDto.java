@@ -11,5 +11,6 @@ public class BeerOrderDto {
 
     private UUID id;
     private String customerRef;
+    private BeerOrderShipmentDto beerOrderShipment;
 
 }
