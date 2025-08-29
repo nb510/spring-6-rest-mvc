@@ -9,6 +9,7 @@ import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
+import guru.springframework.spring6restmvc.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
@@ -18,8 +19,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,8 +31,6 @@ import java.util.UUID;
 @Primary
 @RequiredArgsConstructor
 public class BeerServiceJpa implements BeerService {
-    public static final int DEFAULT_PAGE_NUMBER = 0;
-    public static final int DEFAULT_PAGE_SIZE = 10;
 
     private final BeerRepository beerRepository;
     private final BeerMapper beerMapper;
@@ -45,15 +42,8 @@ public class BeerServiceJpa implements BeerService {
     public Page<BeerDto> listBeers(Integer pageNumber, Integer pageSize) {
         log.info("Calling listBeers");
 
-        Page<Beer> result = beerRepository.findAll(buildPageable(pageNumber, pageSize));
+        Page<Beer> result = beerRepository.findAll(PageableUtil.buildPageable(pageNumber, pageSize));
         return result.map(beerMapper::toBeerDto);
-    }
-
-    protected Pageable buildPageable(Integer pageNumber, Integer pageSize) {
-        int queryPageNumber = pageNumber == null || pageSize < DEFAULT_PAGE_NUMBER ? DEFAULT_PAGE_NUMBER : pageNumber;
-        int queryPageSize = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-
-        return PageRequest.of(queryPageNumber, queryPageSize);
     }
 
     @Cacheable(cacheNames = "beerCache", key = "#id")
