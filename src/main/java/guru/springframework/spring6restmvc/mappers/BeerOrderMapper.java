@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 public interface BeerOrderMapper {
 
     @Mapping(target = "beerOrderShipment", ignore = true)
+    @Mapping(target = "beerOrderLines", ignore = true)
     BeerOrderDto toDtoBasic(BeerOrder order);
 
     BeerOrderDto toDtoFull(BeerOrder order);

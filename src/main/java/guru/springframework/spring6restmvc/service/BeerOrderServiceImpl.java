@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import static guru.springframework.spring6restmvc.model.OrderPopulationOptions.FULL;
 
 @RequiredArgsConstructor
@@ -27,5 +30,11 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             return beerOrderRepository.findAll(PageableUtil.buildPageable(pageNumber, pageSize))
                     .map(beerOrderMapper::toDtoBasic);
         }
+    }
+
+    @Override
+    public Optional<BeerOrderDto> getBeerOrderById(UUID orderId) {
+        return beerOrderRepository.findByIdWithShipmentAndOrderLines(orderId)
+                .map(beerOrderMapper::toDtoFull);
     }
 }

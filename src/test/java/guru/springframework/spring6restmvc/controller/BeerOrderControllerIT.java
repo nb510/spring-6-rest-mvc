@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.UUID;
+
 import static guru.springframework.spring6restmvc.controller.BeerControllerIT.jwtRequestPostProcessor;
+import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_ID_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_PATH;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -24,6 +28,8 @@ public class BeerOrderControllerIT {
 
     @Autowired
     WebApplicationContext wac;
+    @Autowired
+    BeerOrderRepository beerOrderRepository;
 
     MockMvc mockMvc;
 
@@ -77,5 +83,23 @@ public class BeerOrderControllerIT {
                 .andExpect(jsonPath("$.content[0].beerOrderLines[0].orderQuantity").isNotEmpty())
                 .andExpect(jsonPath("$.content[0].beerOrderLines[0].beer").isNotEmpty())
                 .andExpect(jsonPath("$.content[0].beerOrderLines[0].beer.beerName").isNotEmpty());
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.read")
+    void testGetBeerOrderById() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get(BEER_ORDER_ID_PATH, id)
+                        .param("option", "FULL")
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.beerOrderShipment").isNotEmpty())
+                .andExpect(jsonPath("$.beerOrderShipment.trackingNumber").isNotEmpty())
+                .andExpect(jsonPath("$.beerOrderLines").isNotEmpty())
+                .andExpect(jsonPath("$.beerOrderLines[0].orderQuantity").isNotEmpty())
+                .andExpect(jsonPath("$.beerOrderLines[0].beer").isNotEmpty())
+                .andExpect(jsonPath("$.beerOrderLines[0].beer.beerName").isNotEmpty());
+
     }
 }
