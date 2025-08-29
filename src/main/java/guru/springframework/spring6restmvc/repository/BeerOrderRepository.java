@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface BeerOrderRepository extends JpaRepository<BeerOrder, UUID> {
 
-    @EntityGraph(attributePaths = {"beerOrderShipment"})
+    @EntityGraph(attributePaths = {"beerOrderShipment", "beerOrderLines", "beerOrderLines.beer"})
     @Query("select o from BeerOrder o")
     Page<BeerOrder> findAllWithShipment(Pageable pageable);
 }

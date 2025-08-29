@@ -5,9 +5,7 @@ import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(
-        uses = {BeerOrderShipmentMapper.class}
-)
+@Mapper(uses = {BeerOrderShipmentMapper.class, BeerOrderLineMapper.class})
 public interface BeerOrderMapper {
 
     @Mapping(target = "beerOrderShipment", ignore = true)

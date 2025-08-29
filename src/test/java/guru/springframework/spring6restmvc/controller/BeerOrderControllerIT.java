@@ -72,6 +72,10 @@ public class BeerOrderControllerIT {
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].beerOrderShipment").isNotEmpty())
-                .andExpect(jsonPath("$.content[0].beerOrderShipment.trackingNumber").isNotEmpty());
+                .andExpect(jsonPath("$.content[0].beerOrderShipment.trackingNumber").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].beerOrderLines").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].beerOrderLines[0].orderQuantity").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].beerOrderLines[0].beer").isNotEmpty())
+                .andExpect(jsonPath("$.content[0].beerOrderLines[0].beer.beerName").isNotEmpty());
     }
 }

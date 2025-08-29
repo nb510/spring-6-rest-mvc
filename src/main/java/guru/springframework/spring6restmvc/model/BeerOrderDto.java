@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.model;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -12,5 +13,6 @@ public class BeerOrderDto {
     private UUID id;
     private String customerRef;
     private BeerOrderShipmentDto beerOrderShipment;
+    private List<BeerOrderLineDto> beerOrderLines;
 
 }

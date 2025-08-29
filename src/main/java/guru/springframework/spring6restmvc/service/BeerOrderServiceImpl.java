@@ -1,6 +1,5 @@
 package guru.springframework.spring6restmvc.service;
 
-import guru.springframework.spring6restmvc.entities.BeerOrder;
 import guru.springframework.spring6restmvc.mappers.BeerOrderMapper;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
@@ -28,10 +27,5 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             return beerOrderRepository.findAll(PageableUtil.buildPageable(pageNumber, pageSize))
                     .map(beerOrderMapper::toDtoBasic);
         }
-    }
-
-    @Override
-    public Page<BeerOrder> getOrder() {
-        return beerOrderRepository.findAll(PageableUtil.buildPageable(0, 10));
     }
 }
