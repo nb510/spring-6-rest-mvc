@@ -42,4 +42,12 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     public UUID createBeerOrder(BeerOrderDto orderDto) {
         return beerOrderRepository.save(beerOrderMapper.toEntity(orderDto)).getId();
     }
+
+    @Override
+    public void updateBeer(UUID orderId, BeerOrderDto orderDto) {
+        beerOrderRepository.findById(orderId).ifPresent(foundOrder -> {
+            foundOrder.setCustomerRef(orderDto.getCustomerRef());
+            beerOrderRepository.save(foundOrder);
+        });
+    }
 }

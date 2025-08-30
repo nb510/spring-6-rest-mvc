@@ -14,4 +14,6 @@ public interface BeerOrderService {
     Optional<BeerOrderDto> getBeerOrderById(UUID orderId);
 
     UUID createBeerOrder(BeerOrderDto orderDto);
+
+    void updateBeer(UUID orderId, BeerOrderDto orderDto);
 }

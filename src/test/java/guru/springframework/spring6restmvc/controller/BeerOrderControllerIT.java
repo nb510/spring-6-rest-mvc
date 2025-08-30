@@ -23,8 +23,7 @@ import static guru.springframework.spring6restmvc.controller.BeerOrderController
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_PATH;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -129,6 +128,29 @@ public class BeerOrderControllerIT {
         String path = UriComponentsBuilder.fromUriString(location).build().getPath();
 
         mockMvc.perform(get(path)
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+    }
+
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testUpdateBeer() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef("new order $$$")
+                .build();
+
+        mockMvc.perform(put(BEER_ORDER_ID_PATH, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        mockMvc.perform(get(BEER_ORDER_ID_PATH, id)
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
