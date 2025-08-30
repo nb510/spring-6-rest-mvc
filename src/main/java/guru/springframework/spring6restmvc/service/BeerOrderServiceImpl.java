@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.service;
 
+import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerOrderMapper;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
@@ -45,19 +46,21 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public void updateBeer(UUID orderId, BeerOrderDto orderDto) {
-        beerOrderRepository.findById(orderId).ifPresent(foundOrder -> {
+        beerOrderRepository.findById(orderId).map(foundOrder -> {
             foundOrder.setCustomerRef(orderDto.getCustomerRef());
             beerOrderRepository.save(foundOrder);
-        });
+            return foundOrder;
+        }).orElseThrow(NotFoundException::new);
     }
 
     @Override
     public void patchBeer(UUID orderId, BeerOrderDto orderDto) {
-        beerOrderRepository.findById(orderId).ifPresent(foundOrder -> {
+        beerOrderRepository.findById(orderId).map(foundOrder -> {
             if (orderDto.getCustomerRef() != null) {
                 foundOrder.setCustomerRef(orderDto.getCustomerRef());
             }
             beerOrderRepository.save(foundOrder);
-        });
+            return foundOrder;
+        }).orElseThrow(NotFoundException::new);
     }
 }
