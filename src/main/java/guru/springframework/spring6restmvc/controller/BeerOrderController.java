@@ -54,4 +54,12 @@ public class BeerOrderController {
                                 @RequestBody BeerOrderDto orderDto) {
         beerOrderService.updateBeer(orderId, orderDto);
     }
+
+    @PreAuthorize("hasAuthority('SCOPE_message.write')")
+    @PatchMapping(BEER_ORDER_ID_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void patchBeerOrder(@PathVariable("orderId") UUID orderId,
+                               @RequestBody BeerOrderDto orderDto) {
+        beerOrderService.patchBeer(orderId, orderDto);
+    }
 }

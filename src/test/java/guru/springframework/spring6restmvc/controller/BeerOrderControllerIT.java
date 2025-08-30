@@ -155,4 +155,26 @@ public class BeerOrderControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
     }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testPatchBeer() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef("new order $$$%%")
+                .build();
+
+        mockMvc.perform(patch(BEER_ORDER_ID_PATH, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        mockMvc.perform(get(BEER_ORDER_ID_PATH, id)
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+    }
 }

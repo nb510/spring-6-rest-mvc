@@ -50,4 +50,14 @@ public class BeerOrderServiceImpl implements BeerOrderService {
             beerOrderRepository.save(foundOrder);
         });
     }
+
+    @Override
+    public void patchBeer(UUID orderId, BeerOrderDto orderDto) {
+        beerOrderRepository.findById(orderId).ifPresent(foundOrder -> {
+            if (orderDto.getCustomerRef() != null) {
+                foundOrder.setCustomerRef(orderDto.getCustomerRef());
+            }
+            beerOrderRepository.save(foundOrder);
+        });
+    }
 }
