@@ -14,4 +14,8 @@ public interface BeerOrderMapper {
 
     BeerOrderDto toDtoFull(BeerOrder order);
 
+    @Mapping(target = "beerOrderShipment", ignore = true)
+    @Mapping(target = "beerOrderLines", ignore = true)
+    BeerOrder toEntity(BeerOrderDto beerOrderDto);
+
 }

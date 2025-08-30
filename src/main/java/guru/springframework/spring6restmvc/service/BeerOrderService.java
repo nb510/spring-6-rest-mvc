@@ -12,4 +12,6 @@ public interface BeerOrderService {
     Page<BeerOrderDto> listBeerOrders(Integer pageNumber, Integer pageSize, OrderPopulationOptions option);
 
     Optional<BeerOrderDto> getBeerOrderById(UUID orderId);
+
+    UUID createBeerOrder(BeerOrderDto orderDto);
 }

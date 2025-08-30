@@ -37,4 +37,9 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         return beerOrderRepository.findByIdWithShipmentAndOrderLines(orderId)
                 .map(beerOrderMapper::toDtoFull);
     }
+
+    @Override
+    public UUID createBeerOrder(BeerOrderDto orderDto) {
+        return beerOrderRepository.save(beerOrderMapper.toEntity(orderDto)).getId();
+    }
 }
