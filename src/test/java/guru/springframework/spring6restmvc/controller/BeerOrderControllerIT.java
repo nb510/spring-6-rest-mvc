@@ -1,8 +1,11 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.spring6restmvc.entities.BeerOrder;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
+import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
+import guru.springframework.spring6restmvc.repository.BeerOrderShipmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,7 @@ import java.util.UUID;
 import static guru.springframework.spring6restmvc.controller.BeerControllerIT.jwtRequestPostProcessor;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_ID_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_PATH;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,6 +40,10 @@ public class BeerOrderControllerIT {
     BeerOrderRepository beerOrderRepository;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    BeerOrderShipmentRepository beerOrderShipmentRepository;
+    @Autowired
+    BeerOrderLineRepository beerOrderLineRepository;
 
     MockMvc mockMvc;
 
@@ -176,5 +184,27 @@ public class BeerOrderControllerIT {
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testDeleteBeerOrder() throws Exception {
+        BeerOrder order =  beerOrderRepository.findAll().get(0);
+        order = beerOrderRepository.findByIdWithShipmentAndOrderLines(order.getId()).get();
+
+        mockMvc.perform(delete(BEER_ORDER_ID_PATH, order.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+        mockMvc.perform(get(BEER_ORDER_ID_PATH, order.getId())
+                        .with(jwtRequestPostProcessor))
+                .andExpect(status().isNotFound());
+
+        assertThat(beerOrderShipmentRepository.findById(order.getBeerOrderShipment().getId())).isEmpty();
+
+        order.getBeerOrderLines().forEach(orderLine ->
+                assertThat(beerOrderLineRepository.findById(orderLine.getId())).isEmpty());
     }
 }

@@ -62,4 +62,11 @@ public class BeerOrderController {
                                @RequestBody BeerOrderDto orderDto) {
         beerOrderService.patchBeer(orderId, orderDto);
     }
+
+    @PreAuthorize("hasAuthority('SCOPE_message.write')")
+    @DeleteMapping(BEER_ORDER_ID_PATH)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBeerOrder(@PathVariable("orderId") UUID orderId) {
+        beerOrderService.deleteBeerOrder(orderId);
+    }
 }

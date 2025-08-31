@@ -18,4 +18,6 @@ public interface BeerOrderService {
     void updateBeer(UUID orderId, BeerOrderDto orderDto);
 
     void patchBeer(UUID orderId, BeerOrderDto orderDto);
+
+    void deleteBeerOrder(UUID orderId);
 }

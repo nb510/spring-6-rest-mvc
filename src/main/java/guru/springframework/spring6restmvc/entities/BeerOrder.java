@@ -60,7 +60,7 @@ public class BeerOrder {
 
     private String customerRef;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST, orphanRemoval = true)
     @JoinColumn(name = "beer_order_shipment_id", unique = true)
     private BeerOrderShipment beerOrderShipment;
 
