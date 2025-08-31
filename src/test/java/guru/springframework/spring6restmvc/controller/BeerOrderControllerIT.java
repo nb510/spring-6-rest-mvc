@@ -111,7 +111,7 @@ public class BeerOrderControllerIT {
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
-    void testCreateBeer() throws Exception {
+    void testCreateBeerOrder() throws Exception {
         BeerOrderDto order = BeerOrderDto.builder()
                 .customerRef("new order")
                 .build();
@@ -136,7 +136,7 @@ public class BeerOrderControllerIT {
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
-    void testUpdateBeer() throws Exception {
+    void testUpdateBeerOrder() throws Exception {
         UUID id = beerOrderRepository.findAll().get(0).getId();
 
         BeerOrderDto order = BeerOrderDto.builder()
@@ -158,7 +158,7 @@ public class BeerOrderControllerIT {
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
-    void testPatchBeer() throws Exception {
+    void testPatchBeerOrder() throws Exception {
         UUID id = beerOrderRepository.findAll().get(0).getId();
 
         BeerOrderDto order = BeerOrderDto.builder()
