@@ -141,6 +141,20 @@ public class BeerOrderControllerIT {
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
     }
 
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testCreateBeerOrderBadRequestBody() throws Exception {
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef(null)
+                .build();
+
+        mockMvc.perform(post(BEER_ORDER_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isBadRequest());
+    }
+
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
@@ -166,6 +180,22 @@ public class BeerOrderControllerIT {
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
+    void testUpdateBeerOrderBadRequestBody() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef(null)
+                .build();
+
+        mockMvc.perform(put(BEER_ORDER_ID_PATH, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testPatchBeerOrder() throws Exception {
         UUID id = beerOrderRepository.findAll().get(0).getId();
 
@@ -184,6 +214,22 @@ public class BeerOrderControllerIT {
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testPatchBeerOrderBadRequestBody() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef(null)
+                .build();
+
+        mockMvc.perform(patch(BEER_ORDER_ID_PATH, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

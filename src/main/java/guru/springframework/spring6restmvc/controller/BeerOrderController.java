@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -41,7 +42,7 @@ public class BeerOrderController {
 
     @PreAuthorize("hasAuthority('SCOPE_message.write')")
     @PostMapping(BEER_ORDER_PATH)
-    public ResponseEntity<Void> createBeerOrder(@RequestBody BeerOrderDto beerOrderDto) {
+    public ResponseEntity<Void> updateBeerOrder(@Validated @RequestBody BeerOrderDto beerOrderDto) {
         UUID id = beerOrderService.createBeerOrder(beerOrderDto);
 
         return ResponseEntity.created(URI.create("/api/v1/order/%s".formatted(id))).build();
@@ -50,8 +51,8 @@ public class BeerOrderController {
     @PreAuthorize("hasAuthority('SCOPE_message.write')")
     @PutMapping(BEER_ORDER_ID_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void createBeerOrder(@PathVariable("orderId") UUID orderId,
-                                @RequestBody BeerOrderDto orderDto) {
+    public void updateBeerOrder(@PathVariable("orderId") UUID orderId,
+                                @Validated @RequestBody BeerOrderDto orderDto) {
         beerOrderService.updateBeer(orderId, orderDto);
     }
 
@@ -59,7 +60,7 @@ public class BeerOrderController {
     @PatchMapping(BEER_ORDER_ID_PATH)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchBeerOrder(@PathVariable("orderId") UUID orderId,
-                               @RequestBody BeerOrderDto orderDto) {
+                               @Validated @RequestBody BeerOrderDto orderDto) {
         beerOrderService.patchBeer(orderId, orderDto);
     }
 
