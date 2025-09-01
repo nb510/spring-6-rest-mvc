@@ -2,6 +2,8 @@ package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.entities.BeerOrder;
+import guru.springframework.spring6restmvc.events.BeerOrderCreateEvent;
+import guru.springframework.spring6restmvc.events.BeerOrderUpdateEvent;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
@@ -13,6 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("default")
+@RecordApplicationEvents
 public class BeerOrderControllerIT {
 
     @Autowired
@@ -44,6 +49,8 @@ public class BeerOrderControllerIT {
     BeerOrderShipmentRepository beerOrderShipmentRepository;
     @Autowired
     BeerOrderLineRepository beerOrderLineRepository;
+    @Autowired
+    ApplicationEvents applicationEvents;
 
     MockMvc mockMvc;
 
@@ -143,6 +150,23 @@ public class BeerOrderControllerIT {
 
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
+    void testCreateBeerOrderEvent() throws Exception {
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef("new order")
+                .build();
+
+        mockMvc.perform(post(BEER_ORDER_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
+
+        assertThat(applicationEvents.stream(BeerOrderCreateEvent.class).count()).isEqualTo(1);
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
     void testCreateBeerOrderBadRequestBody() throws Exception {
         BeerOrderDto order = BeerOrderDto.builder()
                 .customerRef(null)
@@ -176,6 +200,24 @@ public class BeerOrderControllerIT {
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+    }
+
+    @Test
+    @WithMockUser(authorities = "SCOPE_message.write")
+    void testUpdateBeerOrderEvent() throws Exception {
+        UUID id = beerOrderRepository.findAll().get(0).getId();
+
+        BeerOrderDto order = BeerOrderDto.builder()
+                .customerRef("new order $$$")
+                .build();
+
+        mockMvc.perform(put(BEER_ORDER_ID_PATH, id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(jwtRequestPostProcessor)
+                        .content(objectMapper.writeValueAsString(order)))
+                .andExpect(status().isNoContent());
+
+        assertThat(applicationEvents.stream(BeerOrderUpdateEvent.class).count()).isEqualTo(1);
     }
 
     @Test

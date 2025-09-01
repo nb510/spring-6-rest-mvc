@@ -1,16 +1,19 @@
 package guru.springframework.spring6restmvc.service;
 
 import guru.springframework.spring6restmvc.entities.BeerOrder;
+import guru.springframework.spring6restmvc.events.BeerOrderCreateEvent;
+import guru.springframework.spring6restmvc.events.BeerOrderUpdateEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerOrderMapper;
 import guru.springframework.spring6restmvc.model.BeerOrderDto;
 import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
 import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
-import guru.springframework.spring6restmvc.repository.BeerOrderShipmentRepository;
 import guru.springframework.spring6restmvc.util.PageableUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -26,7 +29,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     private final BeerOrderRepository beerOrderRepository;
     private final BeerOrderMapper beerOrderMapper;
     private final BeerOrderLineRepository beerOrderLineRepository;
-    private final BeerOrderShipmentRepository beerOrderShipmentRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public Page<BeerOrderDto> listBeerOrders(Integer pageNumber, Integer pageSize, OrderPopulationOptions option) {
@@ -47,15 +50,22 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public UUID createBeerOrder(BeerOrderDto orderDto) {
-        return beerOrderRepository.save(beerOrderMapper.toEntity(orderDto)).getId();
+        BeerOrder order = beerOrderRepository.save(beerOrderMapper.toEntity(orderDto));
+        applicationEventPublisher.publishEvent(
+                new BeerOrderCreateEvent(order, SecurityContextHolder.getContext().getAuthentication()));
+        return order.getId();
     }
 
     @Override
     public void updateBeer(UUID orderId, BeerOrderDto orderDto) {
         beerOrderRepository.findById(orderId).map(foundOrder -> {
             foundOrder.setCustomerRef(orderDto.getCustomerRef());
-            beerOrderRepository.save(foundOrder);
-            return foundOrder;
+            BeerOrder savedOrder = beerOrderRepository.save(foundOrder);
+
+            applicationEventPublisher.publishEvent(
+                    new BeerOrderUpdateEvent(savedOrder, SecurityContextHolder.getContext().getAuthentication()));
+
+            return savedOrder;
         }).orElseThrow(NotFoundException::new);
     }
 
