@@ -1,6 +1,5 @@
 package guru.springframework.spring6restmvc.model;
 
-import guru.springframework.spring6restmvc.entities.BeerOrderLineStatus;
 import lombok.Builder;
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package guru.springframework.spring6restmvc.entities;
+package guru.springframework.spring6restmvc.model;
 
 public enum BeerOrderLineStatus {
     NEW,

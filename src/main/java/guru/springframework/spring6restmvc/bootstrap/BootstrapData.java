@@ -2,6 +2,7 @@ package guru.springframework.spring6restmvc.bootstrap;
 
 import guru.springframework.spring6restmvc.entities.*;
 import guru.springframework.spring6restmvc.model.BeerCsvRecord;
+import guru.springframework.spring6restmvc.model.BeerOrderLineStatus;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repository.*;
 import guru.springframework.spring6restmvc.service.BeerCsvService;
