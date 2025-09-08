@@ -44,4 +44,8 @@ public class BeerOrderLine {
 
     private Integer orderQuantity;
     private Integer quantityAllocated;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private BeerOrderLineStatus status = BeerOrderLineStatus.NEW;
 }
