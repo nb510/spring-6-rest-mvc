@@ -10,6 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.UUID;
 public class BeerOrder {
 
     public BeerOrder(UUID id, Integer version, LocalDateTime createdDate, LocalDateTime lastModifiedDate,
-                     Customer customer, Set<BeerOrderLine> beerOrderLines, String customerRef,
+                     Customer customer, Set<BeerOrderLine> beerOrderLines, String customerRef, BigDecimal paymentAmount,
                      BeerOrderShipment beerOrderShipment) {
         this.id = id;
         this.version = version;
@@ -32,6 +33,7 @@ public class BeerOrder {
         this.customer = customer;
         this.beerOrderLines = beerOrderLines;
         this.customerRef = customerRef;
+        this.paymentAmount = paymentAmount;
         this.setBeerOrderShipment(beerOrderShipment);
     }
 
@@ -59,6 +61,9 @@ public class BeerOrder {
     private Set<BeerOrderLine> beerOrderLines;
 
     private String customerRef;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal paymentAmount;
 
     @OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "beer_order_shipment_id", unique = true)

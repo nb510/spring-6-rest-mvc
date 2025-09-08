@@ -42,7 +42,7 @@ public class BeerOrderController {
 
     @PreAuthorize("hasAuthority('SCOPE_message.write')")
     @PostMapping(BEER_ORDER_PATH)
-    public ResponseEntity<Void> updateBeerOrder(@Validated @RequestBody BeerOrderDto beerOrderDto) {
+    public ResponseEntity<Void> createBeerOrder(@Validated @RequestBody BeerOrderDto beerOrderDto) {
         UUID id = beerOrderService.createBeerOrder(beerOrderDto);
 
         return ResponseEntity.created(URI.create("/api/v1/order/%s".formatted(id))).build();

@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,11 +53,13 @@ class BeerOrderRepositoryTest {
         BeerOrder order = BeerOrder.builder()
                 .customer(testCustomer)
                 .customerRef("Test order")
+                .paymentAmount(BigDecimal.valueOf(101231661, 99_999))
                 .build();
 
         BeerOrder savedOrder = beerOrderRepository.saveAndFlush(order);
 
         System.out.println(savedOrder.getCustomerRef());
+        assertThat(savedOrder.getPaymentAmount().equals(order.getPaymentAmount()));
     }
 
     @Test
@@ -112,6 +115,11 @@ class BeerOrderRepositoryTest {
         assertThrows(LazyInitializationException.class, () -> {
             beerOrderMapper.toDtoFull(order);
         });
+    }
+
+    @Test
+    void testPaymentAmount() {
+
     }
 
 }

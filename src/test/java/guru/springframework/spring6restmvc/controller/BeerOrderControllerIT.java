@@ -23,12 +23,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static guru.springframework.spring6restmvc.controller.BeerControllerIT.jwtRequestPostProcessor;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_ID_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_PATH;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -129,6 +131,7 @@ public class BeerOrderControllerIT {
     void testCreateBeerOrder() throws Exception {
         BeerOrderDto order = BeerOrderDto.builder()
                 .customerRef("new order")
+                .paymentAmount(BigDecimal.valueOf(12.35))
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(post(BEER_ORDER_PATH)
@@ -145,7 +148,8 @@ public class BeerOrderControllerIT {
         mockMvc.perform(get(path)
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())));
+                .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())))
+                .andExpect(jsonPath("$.paymentAmount", comparesEqualTo(12.35)));
     }
 
     @Test

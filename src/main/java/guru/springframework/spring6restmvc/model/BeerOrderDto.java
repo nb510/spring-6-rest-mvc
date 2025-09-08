@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,5 +19,6 @@ public class BeerOrderDto {
 
     private BeerOrderShipmentDto beerOrderShipment;
     private List<BeerOrderLineDto> beerOrderLines;
+    private BigDecimal paymentAmount;
 
 }
