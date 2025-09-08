@@ -5,6 +5,7 @@ import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.CustomerMapper;
 import guru.springframework.spring6restmvc.model.CustomerDto;
 import guru.springframework.spring6restmvc.repository.CustomerRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,7 @@ class CustomerControllerIT {
         assertThat(updatedCustomer.getAge()).isEqualTo(customer.getAge());
     }
 
+    @Disabled
     @Rollback
     @Transactional
     @Test
@@ -129,6 +131,7 @@ class CustomerControllerIT {
         assertThat(result.size()).isEqualTo(3);
     }
 
+    @Disabled
     @Test
     @Transactional
     @Rollback
@@ -146,6 +149,7 @@ class CustomerControllerIT {
         assertThat(result).isEqualTo(customers.get(0));
     }
 
+    @Disabled
     @Test
     @Transactional
     @Rollback

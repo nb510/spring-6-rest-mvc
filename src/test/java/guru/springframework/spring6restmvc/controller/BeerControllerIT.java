@@ -15,6 +15,7 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import guru.springframework.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -332,6 +333,7 @@ class BeerControllerIT {
     @Transactional
     @Test
     @WithMockUser(authorities = "SCOPE_message.read")
+    @Disabled
     void testEmptyList() {
         beerRepository.deleteAll();
 

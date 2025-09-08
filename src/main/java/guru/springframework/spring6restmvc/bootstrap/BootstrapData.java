@@ -137,7 +137,7 @@ public class BootstrapData implements CommandLineRunner {
 
         BeerOrderLine orderLine1 = BeerOrderLine.builder()
                 .beerOrder(order1)
-                .beer(beers.get(0))
+                .beer(beers.get(15))
                 .orderQuantity(10)
                 .quantityAllocated(10)
                 .status(BeerOrderLineStatus.NEW)
@@ -145,7 +145,7 @@ public class BootstrapData implements CommandLineRunner {
 
         BeerOrderLine orderLine2 = BeerOrderLine.builder()
                 .beerOrder(order1)
-                .beer(beers.get(1))
+                .beer(beers.get(16))
                 .orderQuantity(12)
                 .quantityAllocated(12)
                 .status(BeerOrderLineStatus.COMPLETE)
@@ -169,7 +169,7 @@ public class BootstrapData implements CommandLineRunner {
 
         BeerOrderLine orderLine4 = BeerOrderLine.builder()
                 .beerOrder(order2)
-                .beer(beers.get(0))
+                .beer(beers.get(17))
                 .orderQuantity(10)
                 .quantityAllocated(10)
                 .status(BeerOrderLineStatus.NEW)
@@ -177,7 +177,7 @@ public class BootstrapData implements CommandLineRunner {
 
         BeerOrderLine orderLine5 = BeerOrderLine.builder()
                 .beerOrder(order2)
-                .beer(beers.get(1))
+                .beer(beers.get(18))
                 .orderQuantity(12)
                 .quantityAllocated(12)
                 .status(BeerOrderLineStatus.COMPLETE)
