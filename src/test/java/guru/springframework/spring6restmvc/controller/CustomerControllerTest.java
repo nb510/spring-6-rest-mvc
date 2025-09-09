@@ -2,8 +2,8 @@ package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.configuration.SpringSecurityConfig;
-import guru.springframework.spring6restmvc.model.CustomerDto;
 import guru.springframework.spring6restmvc.service.CustomerService;
+import guru.springframework.spring6restmvcapi.CustomerDto;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;

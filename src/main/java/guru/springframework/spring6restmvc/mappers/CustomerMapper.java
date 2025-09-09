@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.mappers;
 
 import guru.springframework.spring6restmvc.entities.Customer;
-import guru.springframework.spring6restmvc.model.CustomerDto;
+import guru.springframework.spring6restmvcapi.CustomerDto;
 import org.mapstruct.Mapper;
 
 @Mapper

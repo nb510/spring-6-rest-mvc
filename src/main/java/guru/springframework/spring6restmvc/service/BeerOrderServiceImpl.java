@@ -5,11 +5,11 @@ import guru.springframework.spring6restmvc.events.BeerOrderCreateEvent;
 import guru.springframework.spring6restmvc.events.BeerOrderUpdateEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerOrderMapper;
-import guru.springframework.spring6restmvc.model.BeerOrderDto;
-import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
 import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
 import guru.springframework.spring6restmvc.util.PageableUtil;
+import guru.springframework.spring6restmvcapi.BeerOrderDto;
+import guru.springframework.spring6restmvcapi.OrderPopulationOptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.Optional;
 import java.util.UUID;
 
-import static guru.springframework.spring6restmvc.model.OrderPopulationOptions.FULL;
+import static guru.springframework.spring6restmvcapi.OrderPopulationOptions.FULL;
 
 @RequiredArgsConstructor
 @Service

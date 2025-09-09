@@ -2,9 +2,9 @@ package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.configuration.SpringSecurityConfig;
-import guru.springframework.spring6restmvc.model.BeerDto;
-import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.service.BeerService;
+import guru.springframework.spring6restmvcapi.BeerDto;
+import guru.springframework.spring6restmvcapi.BeerStyle;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;

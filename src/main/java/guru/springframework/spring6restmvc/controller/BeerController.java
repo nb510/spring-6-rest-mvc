@@ -1,8 +1,8 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.exception.NotFoundException;
-import guru.springframework.spring6restmvc.model.BeerDto;
 import guru.springframework.spring6restmvc.service.BeerService;
+import guru.springframework.spring6restmvcapi.BeerDto;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

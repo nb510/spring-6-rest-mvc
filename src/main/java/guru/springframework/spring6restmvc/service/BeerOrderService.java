@@ -1,7 +1,7 @@
 package guru.springframework.spring6restmvc.service;
 
-import guru.springframework.spring6restmvc.model.BeerOrderDto;
-import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
+import guru.springframework.spring6restmvcapi.BeerOrderDto;
+import guru.springframework.spring6restmvcapi.OrderPopulationOptions;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

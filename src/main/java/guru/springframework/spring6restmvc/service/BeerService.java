@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.service;
 
-import guru.springframework.spring6restmvc.model.BeerDto;
+import guru.springframework.spring6restmvcapi.BeerDto;
 import org.springframework.data.domain.Page;
 
 import java.util.Optional;

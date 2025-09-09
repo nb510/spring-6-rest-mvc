@@ -1,9 +1,9 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.exception.NotFoundException;
-import guru.springframework.spring6restmvc.model.BeerOrderDto;
-import guru.springframework.spring6restmvc.model.OrderPopulationOptions;
 import guru.springframework.spring6restmvc.service.BeerOrderService;
+import guru.springframework.spring6restmvcapi.BeerOrderDto;
+import guru.springframework.spring6restmvcapi.OrderPopulationOptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
