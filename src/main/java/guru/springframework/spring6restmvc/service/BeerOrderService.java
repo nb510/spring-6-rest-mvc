@@ -15,9 +15,9 @@ public interface BeerOrderService {
 
     UUID createBeerOrder(BeerOrderDto orderDto);
 
-    void updateBeer(UUID orderId, BeerOrderDto orderDto);
+    void updateBeerOrder(UUID orderId, BeerOrderDto orderDto);
 
-    void patchBeer(UUID orderId, BeerOrderDto orderDto);
+    void patchBeerOrder(UUID orderId, BeerOrderDto orderDto);
 
     void deleteBeerOrder(UUID orderId);
 }

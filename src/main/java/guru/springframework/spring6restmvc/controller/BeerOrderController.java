@@ -53,7 +53,7 @@ public class BeerOrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateBeerOrder(@PathVariable("orderId") UUID orderId,
                                 @Validated @RequestBody BeerOrderDto orderDto) {
-        beerOrderService.updateBeer(orderId, orderDto);
+        beerOrderService.updateBeerOrder(orderId, orderDto);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_message.write')")
@@ -61,7 +61,7 @@ public class BeerOrderController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void patchBeerOrder(@PathVariable("orderId") UUID orderId,
                                @Validated @RequestBody BeerOrderDto orderDto) {
-        beerOrderService.patchBeer(orderId, orderDto);
+        beerOrderService.patchBeerOrder(orderId, orderDto);
     }
 
     @PreAuthorize("hasAuthority('SCOPE_message.write')")

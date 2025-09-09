@@ -81,7 +81,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     }
 
     @Override
-    public void updateBeer(UUID orderId, BeerOrderDto orderDto) {
+    public void updateBeerOrder(UUID orderId, BeerOrderDto orderDto) {
         beerOrderRepository.findById(orderId).map(foundOrder -> {
             foundOrder.setCustomerRef(orderDto.getCustomerRef());
             BeerOrder savedOrder = beerOrderRepository.save(foundOrder);
@@ -94,7 +94,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     }
 
     @Override
-    public void patchBeer(UUID orderId, BeerOrderDto orderDto) {
+    public void patchBeerOrder(UUID orderId, BeerOrderDto orderDto) {
         beerOrderRepository.findById(orderId).map(foundOrder -> {
             if (orderDto.getCustomerRef() != null) {
                 foundOrder.setCustomerRef(orderDto.getCustomerRef());
