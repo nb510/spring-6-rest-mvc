@@ -12,6 +12,7 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import guru.springframework.spring6restmvc.util.PageableUtil;
 import guru.springframework.spring6restmvcapi.BeerOrderDto;
 import guru.springframework.spring6restmvcapi.OrderPopulationOptions;
+import guru.springframework.spring6restmvcapi.event.OrderPlacedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -82,12 +83,17 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public void updateBeerOrder(UUID orderId, BeerOrderDto orderDto) {
-        beerOrderRepository.findById(orderId).map(foundOrder -> {
+        beerOrderRepository.findByIdWithShipmentAndOrderLines(orderId).map(foundOrder -> {
             foundOrder.setCustomerRef(orderDto.getCustomerRef());
+            foundOrder.setPaymentAmount(orderDto.getPaymentAmount());
             BeerOrder savedOrder = beerOrderRepository.save(foundOrder);
 
             applicationEventPublisher.publishEvent(
                     new BeerOrderUpdateEvent(savedOrder, SecurityContextHolder.getContext().getAuthentication()));
+
+            applicationEventPublisher.publishEvent(
+                    new OrderPlacedEvent(beerOrderMapper.toDtoFull(foundOrder))
+            );
 
             return savedOrder;
         }).orElseThrow(NotFoundException::new);
