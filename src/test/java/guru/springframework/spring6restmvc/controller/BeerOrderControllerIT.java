@@ -1,13 +1,17 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.entities.BeerOrder;
 import guru.springframework.spring6restmvc.events.BeerOrderCreateEvent;
 import guru.springframework.spring6restmvc.events.BeerOrderUpdateEvent;
 import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderShipmentRepository;
+import guru.springframework.spring6restmvc.repository.BeerRepository;
+import guru.springframework.spring6restmvcapi.BeerDto;
 import guru.springframework.spring6restmvcapi.BeerOrderDto;
+import guru.springframework.spring6restmvcapi.BeerOrderLineDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import static guru.springframework.spring6restmvc.controller.BeerControllerIT.jwtRequestPostProcessor;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_ID_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerOrderController.BEER_ORDER_PATH;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -53,6 +56,8 @@ public class BeerOrderControllerIT {
     BeerOrderShipmentRepository beerOrderShipmentRepository;
     @Autowired
     BeerOrderLineRepository beerOrderLineRepository;
+    @Autowired
+    BeerRepository beerRepository;
     @Autowired
     ApplicationEvents applicationEvents;
 
@@ -131,9 +136,25 @@ public class BeerOrderControllerIT {
     @Test
     @WithMockUser(authorities = "SCOPE_message.write")
     void testCreateBeerOrder() throws Exception {
+        List<Beer> beers = beerRepository.findAll();
+
+        BeerOrderLineDto orderLine1 = BeerOrderLineDto.builder()
+                .beer(BeerDto.builder()
+                        .id(beers.get(21).getId())
+                        .build())
+                .orderQuantity(10)
+                .build();
+
+        BeerOrderLineDto orderLine2 = BeerOrderLineDto.builder()
+                .beer(BeerDto.builder()
+                        .id(beers.get(22).getId())
+                        .build())
+                .orderQuantity(10)
+                .build();
+
         BeerOrderDto order = BeerOrderDto.builder()
                 .customerRef("new order")
-                .paymentAmount(BigDecimal.valueOf(12.35))
+                .beerOrderLines(List.of(orderLine1, orderLine2))
                 .build();
 
         MvcResult mvcResult = mockMvc.perform(post(BEER_ORDER_PATH)
@@ -151,7 +172,10 @@ public class BeerOrderControllerIT {
                         .with(jwtRequestPostProcessor))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())))
-                .andExpect(jsonPath("$.paymentAmount", comparesEqualTo(12.35)));
+                .andExpect(jsonPath("$.beerOrderLines.length()", is(2)))
+                .andExpect(jsonPath("$.beerOrderLines[0].beer.id", is(orderLine1.getBeer().getId().toString())))
+                .andExpect(jsonPath("$.beerOrderLines[0].orderQuantity", is(orderLine1.getOrderQuantity())))
+                .andExpect(jsonPath("$.beerOrderLines[0].status", is("NEW")));
     }
 
     @Test

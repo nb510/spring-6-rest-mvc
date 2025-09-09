@@ -31,7 +31,7 @@ public class BeerOrder {
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
         this.customer = customer;
-        this.beerOrderLines = beerOrderLines;
+        this.setBeerOrderLines(beerOrderLines);
         this.customerRef = customerRef;
         this.paymentAmount = paymentAmount;
         this.setBeerOrderShipment(beerOrderShipment);
@@ -57,7 +57,7 @@ public class BeerOrder {
     @ManyToOne
     private Customer customer;
 
-    @OneToMany(mappedBy = "beerOrder")
+    @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.PERSIST)
     private Set<BeerOrderLine> beerOrderLines;
 
     private String customerRef;
@@ -74,5 +74,12 @@ public class BeerOrder {
         if (beerOrderShipment != null) {
             beerOrderShipment.setBeerOrder(this);
         }
+    }
+
+    public void setBeerOrderLines(Set<BeerOrderLine> beerOrderLines) {
+        if (beerOrderLines != null) {
+            beerOrderLines.forEach(line -> line.setBeerOrder(this));
+        }
+        this.beerOrderLines = beerOrderLines;
     }
 }

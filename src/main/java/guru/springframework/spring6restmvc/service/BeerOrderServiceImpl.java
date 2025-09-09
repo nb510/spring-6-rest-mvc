@@ -1,12 +1,14 @@
 package guru.springframework.spring6restmvc.service;
 
 import guru.springframework.spring6restmvc.entities.BeerOrder;
+import guru.springframework.spring6restmvc.entities.BeerOrderLine;
 import guru.springframework.spring6restmvc.events.BeerOrderCreateEvent;
 import guru.springframework.spring6restmvc.events.BeerOrderUpdateEvent;
 import guru.springframework.spring6restmvc.exception.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerOrderMapper;
 import guru.springframework.spring6restmvc.repository.BeerOrderLineRepository;
 import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
+import guru.springframework.spring6restmvc.repository.BeerRepository;
 import guru.springframework.spring6restmvc.util.PageableUtil;
 import guru.springframework.spring6restmvcapi.BeerOrderDto;
 import guru.springframework.spring6restmvcapi.OrderPopulationOptions;
@@ -18,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static guru.springframework.spring6restmvcapi.OrderPopulationOptions.FULL;
 
@@ -29,6 +33,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
     private final BeerOrderRepository beerOrderRepository;
     private final BeerOrderMapper beerOrderMapper;
     private final BeerOrderLineRepository beerOrderLineRepository;
+    private final BeerRepository beerRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
@@ -50,10 +55,29 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public UUID createBeerOrder(BeerOrderDto orderDto) {
-        BeerOrder order = beerOrderRepository.save(beerOrderMapper.toEntity(orderDto));
+        Set<BeerOrderLine> orderLines = null;
+        if (orderDto.getBeerOrderLines() != null) {
+            orderLines = orderDto.getBeerOrderLines()
+                    .stream()
+                    .map(orderLineDto -> BeerOrderLine.builder()
+                            .beer(orderLineDto.getBeer() == null || orderLineDto.getBeer().getId() == null
+                                    ? null
+                                    : beerRepository.findById(orderLineDto.getBeer().getId()).orElseThrow(NotFoundException::new))
+                            .orderQuantity(orderLineDto.getOrderQuantity())
+                            .build())
+                    .collect(Collectors.toSet());
+        }
+
+        BeerOrder savedOrder = beerOrderRepository.save(
+                BeerOrder.builder()
+                        .customerRef(orderDto.getCustomerRef())
+                        .beerOrderLines(orderLines)
+                        .build());
+
         applicationEventPublisher.publishEvent(
-                new BeerOrderCreateEvent(order, SecurityContextHolder.getContext().getAuthentication()));
-        return order.getId();
+                new BeerOrderCreateEvent(savedOrder, SecurityContextHolder.getContext().getAuthentication()));
+
+        return savedOrder.getId();
     }
 
     @Override
