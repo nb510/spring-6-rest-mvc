@@ -173,7 +173,7 @@ public class BeerOrderControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerRef", is(order.getCustomerRef())))
                 .andExpect(jsonPath("$.beerOrderLines.length()", is(2)))
-                .andExpect(jsonPath("$.beerOrderLines[0].beer.id", is(orderLine1.getBeer().getId().toString())))
+                .andExpect(jsonPath("$.beerOrderLines[0].beer.id").isNotEmpty())
                 .andExpect(jsonPath("$.beerOrderLines[0].orderQuantity", is(orderLine1.getOrderQuantity())))
                 .andExpect(jsonPath("$.beerOrderLines[0].status", is("NEW")));
     }

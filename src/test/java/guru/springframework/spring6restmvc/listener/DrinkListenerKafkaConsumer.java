@@ -5,10 +5,12 @@ import guru.springframework.spring6restmvcapi.event.DrinkRequestEvent;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@ActiveProfiles("default")
 public class DrinkListenerKafkaConsumer {
     public AtomicInteger iceColdMessageCount = new AtomicInteger(0);
     public AtomicInteger coldMessageCount = new AtomicInteger(0);
