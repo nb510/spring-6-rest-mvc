@@ -170,6 +170,28 @@
 
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>ci-cd</id>
+            <activation>
+                <property>
+                    <name>env.GITHUB_ACTIONS</name>
+                    <value>true</value>
+                </property>
+
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>guru.springframework</groupId>
+                    <artifactId>spring-6-rest-mvc-api</artifactId>
+                    <version>0.0.1-SNAPSHOT</version>
+                    <scope>system</scope>
+                    <systemPath>${project.basedir}/dependencies/spring-6-rest-mvc-api-0.0.1-SNAPSHOT.jar</systemPath>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>

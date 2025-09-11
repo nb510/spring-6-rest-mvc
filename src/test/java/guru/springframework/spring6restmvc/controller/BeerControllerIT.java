@@ -42,6 +42,7 @@ import java.util.UUID;
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH;
 import static guru.springframework.spring6restmvc.controller.BeerController.BEER_PATH_ID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -339,6 +340,11 @@ class BeerControllerIT {
 
         Page<BeerDto> result = beerController.listBeers(null, null);
         assertThat(result.getContent().size()).isEqualTo(0);
+    }
+
+    @Test
+    void testNothing() {
+        assertEquals(1, 1);
     }
 
 }
